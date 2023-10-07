@@ -38,12 +38,20 @@ export function DataTable<TData, TValue>({
           ) : (
             <div
               key={row.id}
-              className="grid grid-cols-[minmax(58%,_1fr)_40%] md:grid-cols-[minmax(175px,_30%)_minmax(100px,_1fr)_100px] gap-2 py-3"
+              className={
+                "group grid gap-0 md:gap-2 items-center py-0 pt-2 md:pt-0 -mx-6 px-6 md:h-14 cursor-pointer hover:bg-slate-100 " +
+                "grid-cols-[minmax(58%,_1fr)_30%_16px] md:grid-cols-[minmax(175px,_30%)_minmax(100px,_1fr)_100px_16px]"
+              }
             >
               {row.getVisibleCells().map((cell, i) => (
                 <div
                   key={cell.id}
-                  className={i === 1 ? "order-last md:order-none" : ""}
+                  className={
+                    i === 1
+                      ? "order-last flex items-center h-8 col-span-3 -mx-6 px-6 bg-slate-50 group-hover:bg-inherit " +
+                        "md:order-none md:px-0 md:mx-0 md:col-span-1 md:bg-inherit"
+                      : ""
+                  }
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </div>
@@ -79,7 +87,7 @@ export function DailyTransactionsDividerRow({
     momentDate.format("DD MMM");
 
   return (
-    <h3 className={cn("text-sm text-slate-800 py-4", className)}>
+    <h3 className={cn("text-base text-slate-800 py-4 -mx-6 px-6", className)}>
       {isEqualDay() ? "Today" : isEqualDay(1) ? "Yesterday" : formatDate()}
     </h3>
   );

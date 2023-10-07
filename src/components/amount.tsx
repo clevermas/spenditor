@@ -6,3 +6,9 @@ export function Amount({ value }: { value: number }) {
 
   return <div className="text-slate-700 text-right">{amount}</div>;
 }
+
+export function amountValidation(value: string) {
+  return (
+    +value && value.trim() === value && +value === +Number(value).toFixed(2)
+  );
+}

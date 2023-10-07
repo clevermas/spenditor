@@ -6,12 +6,23 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "@/components/ui/badge";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { MoreVertical } from "lucide-react";
+
 import { Amount } from "@/components/amount";
 import {
-  Category,
   CategoryType,
-  ExpenseCategories,
-} from "@/components/category";
+  ExpenseCategoriesList,
+  TransactionCategory,
+} from "@/components/transaction/transaction-category";
+
+import { Button } from "@/components/ui/button";
 
 export type TransactionType = "income" | "expense";
 
@@ -45,7 +56,12 @@ export const columns: ColumnDef<Transaction>[] = [
         original: { type, category },
       },
     }) => {
-      return <Category category={category} type={type}></Category>;
+      return (
+        <TransactionCategory
+          category={category}
+          type={type}
+        ></TransactionCategory>
+      );
     },
   },
   {
@@ -70,6 +86,30 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("amount"));
       return <Amount value={amount}></Amount>;
+    },
+  },
+  {
+    accessorKey: "actions",
+    header: "Actions",
+    cell: () => {
+      return (
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="w-7 h-7 p-1 hover:bg-slate-200"
+              >
+                <MoreVertical />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <DropdownMenuItem>Remove</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      );
     },
   },
 ];
@@ -106,7 +146,7 @@ function createTransactions(date: string): Transaction[] {
       .subtract(15 * i, "minute")
       .toISOString(),
     category: getRandomExpenseCategory(),
-    tags: ["test"],
+    tags: Math.random() > 0.5 ? ["test"] : [],
     comment: "",
   }));
 }
@@ -116,7 +156,7 @@ function getRandomPrice() {
 }
 
 function getRandomExpenseCategory(): CategoryType {
-  const categories = Object.keys(ExpenseCategories);
+  const categories = ExpenseCategoriesList;
   const randomIndex = Math.ceil(Math.random() * categories.length);
   const category = categories[randomIndex - 1] as CategoryType;
   return category;
