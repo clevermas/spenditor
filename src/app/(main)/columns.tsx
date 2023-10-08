@@ -1,7 +1,5 @@
 "use client";
 
-import * as moment from "moment";
-
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "@/components/ui/badge";
@@ -16,36 +14,10 @@ import {
 import { MoreVertical } from "lucide-react";
 
 import { Amount } from "@/components/amount";
-import {
-  CategoryType,
-  ExpenseCategoriesList,
-  TransactionCategory,
-} from "@/components/transaction/transaction-category";
+import { TransactionCategory } from "@/components/transaction/transaction-category";
 
+import { Transaction } from "@/api/transactions/";
 import { Button } from "@/components/ui/button";
-
-export type TransactionType = "income" | "expense";
-
-export type Transaction = {
-  type: TransactionType;
-  amount: number;
-  date: string;
-  category: CategoryType;
-  tags: string[];
-  comment: string;
-};
-
-export interface IDailyTransactionsDividerRow {
-  date: string;
-  isDividerRow: boolean;
-}
-
-export interface DailyTransactionsList {
-  date: string;
-  transactions: Transaction[];
-}
-
-export type FlattenTransactionsRow = Transaction | IDailyTransactionsDividerRow;
 
 export const columns: ColumnDef<Transaction>[] = [
   {
@@ -113,51 +85,3 @@ export const columns: ColumnDef<Transaction>[] = [
     },
   },
 ];
-
-export function flattenTransactions(
-  data: DailyTransactionsList[]
-): FlattenTransactionsRow[] {
-  return data.reduce(
-    (accumulator, { date, transactions }) => [
-      ...accumulator,
-      { date, isDividerRow: true },
-      ...transactions,
-    ],
-    [] as FlattenTransactionsRow[]
-  );
-}
-
-export function createDailyTransactions(
-  subtractDays: number = 0
-): DailyTransactionsList {
-  const date = moment().subtract(subtractDays, "day").toISOString();
-
-  return {
-    date,
-    transactions: createTransactions(date),
-  };
-}
-
-function createTransactions(date: string): Transaction[] {
-  return Array.from(Array(5), (_, i) => ({
-    type: "expense",
-    amount: getRandomPrice(),
-    date: moment(date)
-      .subtract(15 * i, "minute")
-      .toISOString(),
-    category: getRandomExpenseCategory(),
-    tags: Math.random() > 0.5 ? ["test"] : [],
-    comment: "",
-  }));
-}
-
-function getRandomPrice() {
-  return Number((-Math.random() * 500).toFixed(2));
-}
-
-function getRandomExpenseCategory(): CategoryType {
-  const categories = ExpenseCategoriesList;
-  const randomIndex = Math.ceil(Math.random() * categories.length);
-  const category = categories[randomIndex - 1] as CategoryType;
-  return category;
-}

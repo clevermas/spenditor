@@ -1,14 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { Plus } from "lucide-react";
-
-import {
-  createDailyTransactions,
-  DailyTransactionsList,
-  flattenTransactions,
-} from "./columns";
 
 import { Amount } from "@/components/amount";
 import { CreateTransactionModal } from "@/components/modals/create-transaction-modal";
@@ -18,23 +10,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { open } from "@/redux/features/modal.slice";
 import { useAppDispatch } from "@/redux/hooks";
 
+import { DailyTransactionsList, Transaction } from "@/api/transactions/";
+import { useGetTransactionsQuery } from "@/redux/services/transactions-api";
+
+import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
 export default function Home() {
-  const [transactions, setTransactions] = useState(
-    [] as DailyTransactionsList[]
-  );
+  const { isLoading, isFetching, data, error } = useGetTransactionsQuery(null);
+
   const dispatch = useAppDispatch();
-
-  const balance = 1325.25;
-
-  useEffect(
-    () =>
-      setTransactions(
-        Array.from(Array(4), (_, i) => createDailyTransactions(i))
-      ),
-    []
-  );
 
   function openCreateTransactionModal() {
     dispatch(open({ type: "createTransaction" }));
@@ -58,16 +43,39 @@ export default function Home() {
         <Card className="self-end">
           <CardContent className="flex gap-2 content-center justify-end py-1 px-3 text-slate-600">
             <span className="leading-2">Balance:</span>{" "}
-            <Amount value={balance}></Amount>
+            <Amount value={"12354"}></Amount>
           </CardContent>
         </Card>
 
         <Card className="w-full">
           <CardContent className="pb-0">
-            <DataTable data={flattenTransactions(transactions)}></DataTable>
+            <DataTable
+              data={flattenTransactions(data?.data || [])}
+              columns={columns}
+            ></DataTable>
           </CardContent>
         </Card>
       </div>
     </main>
+  );
+}
+
+export interface IDailyTransactionsDividerRow {
+  date: string;
+  isDividerRow: boolean;
+}
+
+export type FlattenTransactionsRow = Transaction | IDailyTransactionsDividerRow;
+
+export function flattenTransactions(
+  data: DailyTransactionsList[]
+): FlattenTransactionsRow[] {
+  return data.reduce(
+    (accumulator, { date, transactions }) => [
+      ...accumulator,
+      { date, isDividerRow: true },
+      ...transactions,
+    ],
+    [] as FlattenTransactionsRow[]
   );
 }

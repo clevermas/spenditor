@@ -1,6 +1,7 @@
 "use client";
 
-import { TransactionType } from "@/app/(main)/columns";
+import { TransactionType } from "@/app/api/transactions";
+import { CategoryType } from "@/lib/expense-categories";
 import { titleCase } from "@/lib/utils";
 import { Bus, CircleOff, Home, ShoppingBasket } from "lucide-react";
 
@@ -10,10 +11,6 @@ export const ExpenseCategoriesMap = {
   home: <Home />,
   transport: <Bus />,
 };
-
-export const ExpenseCategoriesList = Object.keys(ExpenseCategoriesMap);
-
-export type CategoryType = keyof typeof ExpenseCategoriesMap;
 
 export function TransactionCategory({
   type,

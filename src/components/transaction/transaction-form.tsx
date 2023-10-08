@@ -11,10 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import {
-  ExpenseCategoriesList,
-  TransactionCategory,
-} from "@/components/transaction/transaction-category";
+import { TransactionCategory } from "@/components/transaction/transaction-category";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import {
@@ -41,6 +38,7 @@ import { Button } from "../ui/button";
 
 import { cn } from "@/lib/utils";
 
+import { ExpenseCategoriesList } from "@/lib/expense-categories";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
