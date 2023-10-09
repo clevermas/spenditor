@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 
 import { Plus } from "lucide-react";
 
@@ -14,18 +14,19 @@ import { useAppDispatch } from "@/redux/hooks";
 import { DailyTransactionsList, Transaction } from "@/api/transactions/";
 import { useGetTransactionsQuery } from "@/redux/services/transactions-api";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { DataTable } from "./data-table";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
-  const currentResult = useGetTransactionsQuery(currentPage);
+  const { data, isSuccess, isFetching } = useGetTransactionsQuery(currentPage);
   const dispatch = useAppDispatch();
 
   const transactions = useMemo(
-    () => flattenTransactions(currentResult.data?.data ?? []),
-    [currentResult.data]
+    () => flattenTransactions(data?.data ?? []),
+    [data]
   );
-  const totalPages = currentResult.data?.totalPages ?? 1;
+  const totalPages = data?.totalPages ?? 1;
 
   function openCreateTransactionModal() {
     dispatch(open({ type: "createTransaction" }));
@@ -37,7 +38,7 @@ export default function Home() {
 
   return (
     <main className="flex justify-center">
-      <div className="flex flex-wrap flex-col sm:flex-row gap-2 w-full lg:w-[768px] px-4 lg:px-8 pt-2">
+      <div className="flex flex-wrap flex-col sm:flex-row gap-2 w-full lg:w-[768px] px-4 lg:px-8 py-2">
         <section className="grow flex gap-2">
           <h1 className="text-lg text-slate-950">Recent transactions</h1>
 
@@ -58,14 +59,32 @@ export default function Home() {
 
         <Card className="w-full">
           <CardContent className="pb-0">
-            <DataTable data={transactions}></DataTable>
-          </CardContent>
+            {isSuccess ? (
+              <DataTable data={transactions}></DataTable>
+            ) : (
+              isFetching && (
+                <div className="py-4 space-y-4">
+                  {Array.from(Array(3), (_, i) => (
+                    <Fragment key={i}>
+                      <Skeleton className="h-8" />
+                      <Skeleton className="h-8 ml-4" />
+                      <Skeleton className="h-8 ml-4" />
+                      <Skeleton className="h-8 ml-4" />
+                      <Skeleton className="h-8 ml-4" />
+                    </Fragment>
+                  ))}
+                </div>
+              )
+            )}
 
-          {currentPage !== totalPages && (
-            <div className="flex justify-center py-2">
-              <Button onClick={loadMore}>Load More</Button>
-            </div>
-          )}
+            {currentPage !== totalPages && (
+              <div className="flex justify-center py-2">
+                <Button onClick={loadMore} disabled={isFetching}>
+                  Load More
+                </Button>
+              </div>
+            )}
+          </CardContent>
         </Card>
       </div>
     </main>
