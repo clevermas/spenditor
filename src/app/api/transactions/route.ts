@@ -1,4 +1,7 @@
 import * as moment from "moment";
+
+import { randomUUID } from "crypto";
+
 import { NextResponse } from "next/server";
 
 import { getPage, PaginationDataResponseDTO } from "@/lib/pagination";
@@ -8,8 +11,9 @@ import { CategoryType, ExpenseCategoriesList } from "@/lib/expense-categories";
 export type TransactionType = "income" | "expense";
 
 export type Transaction = {
+  id: string;
   type: TransactionType;
-  amount: number;
+  amount: string;
   date: string;
   category: CategoryType;
   tags: string[];
@@ -25,9 +29,13 @@ export type GetTransactionsResponseDTO = PaginationDataResponseDTO<
   DailyTransactionsList[]
 >;
 
+const data = Array.from(Array(24), (_, i) => createDailyTransactions(i));
+
 export async function GET(req: Request) {
-  const data = Array.from(Array(4), (_, i) => createDailyTransactions(i));
-  return NextResponse.json(getPage(data, 1));
+  const { searchParams } = new URL(req.url);
+  const page = +searchParams.get("page") ?? 1;
+
+  return NextResponse.json(getPage(data, page, 5));
 }
 
 export function createDailyTransactions(
@@ -43,6 +51,7 @@ export function createDailyTransactions(
 
 function createTransactions(date: string): Transaction[] {
   return Array.from(Array(5), (_, i) => ({
+    id: randomUUID(),
     type: "expense",
     amount: getRandomPrice(),
     date: moment(date)
@@ -55,7 +64,7 @@ function createTransactions(date: string): Transaction[] {
 }
 
 function getRandomPrice() {
-  return Number((-Math.random() * 500).toFixed(2));
+  return (-Math.random() * 500).toFixed(2);
 }
 
 function getRandomExpenseCategory(): CategoryType {

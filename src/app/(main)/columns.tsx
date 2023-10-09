@@ -19,6 +19,9 @@ import { TransactionCategory } from "@/components/transaction/transaction-catego
 import { Transaction } from "@/api/transactions/";
 import { Button } from "@/components/ui/button";
 
+import { open } from "@/redux/features/modal.slice";
+import { useAppDispatch } from "@/redux/hooks";
+
 export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "category",
@@ -63,25 +66,34 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "actions",
     header: "Actions",
-    cell: () => {
-      return (
-        <div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="w-7 h-7 p-1 hover:bg-slate-200"
-              >
-                <MoreVertical />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem>Remove</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      );
-    },
+    cell: ({ row }) => (
+      <DataTableActions data={row.original}></DataTableActions>
+    ),
   },
 ];
+
+function DataTableActions({ data }: Transaction) {
+  const dispatch = useAppDispatch();
+
+  function openEditTransactionModal() {
+    dispatch(open({ type: "editTransaction", data }));
+  }
+
+  return (
+    <div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="w-7 h-7 p-1 hover:bg-slate-200">
+            <MoreVertical />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={openEditTransactionModal}>
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem>Remove</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}

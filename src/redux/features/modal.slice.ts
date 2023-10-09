@@ -1,8 +1,9 @@
+import { Transaction } from "@/app/api/transactions";
 import { createSlice } from "@reduxjs/toolkit";
 
-export type ModalType = "createTransaction";
+export type ModalType = "createTransaction" | "editTransaction";
 
-interface ModalData {}
+type ModalData = Transaction;
 
 type ModalState = {
   type: ModalType | null;

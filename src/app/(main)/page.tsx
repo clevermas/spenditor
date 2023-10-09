@@ -1,9 +1,10 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
 import { Plus } from "lucide-react";
 
 import { Amount } from "@/components/amount";
-import { CreateTransactionModal } from "@/components/modals/create-transaction-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -13,16 +14,25 @@ import { useAppDispatch } from "@/redux/hooks";
 import { DailyTransactionsList, Transaction } from "@/api/transactions/";
 import { useGetTransactionsQuery } from "@/redux/services/transactions-api";
 
-import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
 export default function Home() {
-  const { isLoading, isFetching, data, error } = useGetTransactionsQuery(null);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const currentResult = useGetTransactionsQuery(currentPage);
   const dispatch = useAppDispatch();
+
+  const transactions = useMemo(
+    () => flattenTransactions(currentResult.data?.data ?? []),
+    [currentResult.data]
+  );
+  const totalPages = currentResult.data?.totalPages ?? 1;
 
   function openCreateTransactionModal() {
     dispatch(open({ type: "createTransaction" }));
+  }
+
+  function loadMore() {
+    setCurrentPage((p) => p + 1);
   }
 
   return (
@@ -37,7 +47,6 @@ export default function Home() {
           >
             <Plus className="h-4 w-4" />
           </Button>
-          <CreateTransactionModal></CreateTransactionModal>
         </section>
 
         <Card className="self-end">
@@ -49,11 +58,14 @@ export default function Home() {
 
         <Card className="w-full">
           <CardContent className="pb-0">
-            <DataTable
-              data={flattenTransactions(data?.data || [])}
-              columns={columns}
-            ></DataTable>
+            <DataTable data={transactions}></DataTable>
           </CardContent>
+
+          {currentPage !== totalPages && (
+            <div className="flex justify-center py-2">
+              <Button onClick={loadMore}>Load More</Button>
+            </div>
+          )}
         </Card>
       </div>
     </main>

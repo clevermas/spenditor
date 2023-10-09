@@ -1,6 +1,11 @@
 "use client";
 
 import * as moment from "moment";
+import * as z from "zod";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CalendarIcon } from "lucide-react";
+import { useForm } from "react-hook-form";
 
 import {
   Form,
@@ -11,15 +16,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { TransactionCategory } from "@/components/transaction/transaction-category";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import {
-  InputChip,
-  InputChipControl,
-  InputChipList,
-} from "@/components/ui/input-chip";
-
 import {
   Popover,
   PopoverContent,
@@ -34,16 +33,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Button } from "../ui/button";
+import { amountValidation } from "@/components/amount";
+import { TransactionCategory } from "@/components/transaction/transaction-category";
 
 import { cn } from "@/lib/utils";
 
+import {
+  InputChip,
+  InputChipControl,
+  InputChipList,
+} from "@/components/ui/input-chip";
+
 import { ExpenseCategoriesList } from "@/lib/expense-categories";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon } from "lucide-react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { amountValidation } from "../amount";
 
 export const formSchema = z.object({
   type: z.string(),
@@ -62,14 +63,13 @@ export const formSchema = z.object({
   comment: z.string().optional(),
 });
 
-export const useTransactionForm = (
-  defaultValues = {
+export const useTransactionForm = () => {
+  const defaultValues = {
     type: "expense",
     category: "uncategorised",
     tags: [],
     amount: "",
-  }
-) => {
+  };
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues,

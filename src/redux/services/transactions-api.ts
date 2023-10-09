@@ -1,4 +1,3 @@
-import { TransactionsResponseDTO } from "@/app/api/transactions";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const transactionsApi = createApi({
@@ -8,8 +7,16 @@ export const transactionsApi = createApi({
     baseUrl: "/api/transactions/",
   }),
   endpoints: (builder) => ({
-    getTransactions: builder.query<TransactionsResponseDTO, null>({
-      query: () => "/",
+    getTransactions: builder.query({
+      query: (page = 1) => `/?page=${page}`,
+      merge: (cache, newItems) => {
+        if (newItems.currentPage > cache.currentPage) {
+          cache.data.push(...newItems.data);
+          cache.currentPage = newItems.currentPage;
+        }
+      },
+      serializeQueryArgs: ({ endpointName }) => endpointName,
+      forceRefetch: ({ currentArg, previousArg }) => currentArg !== previousArg,
     }),
   }),
 });
