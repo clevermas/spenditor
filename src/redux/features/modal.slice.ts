@@ -1,4 +1,4 @@
-import { Transaction } from "@/app/api/transactions";
+import { Transaction } from "@/app/api/";
 import { createSlice } from "@reduxjs/toolkit";
 
 export type ModalType = "createTransaction" | "editTransaction";

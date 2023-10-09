@@ -16,7 +16,7 @@ import { MoreVertical } from "lucide-react";
 import { Amount } from "@/components/amount";
 import { TransactionCategory } from "@/components/transaction/transaction-category";
 
-import { Transaction } from "@/api/transactions/";
+import { Transaction } from "@/api/";
 import { Button } from "@/components/ui/button";
 
 import { open } from "@/redux/features/modal.slice";

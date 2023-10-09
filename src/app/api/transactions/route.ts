@@ -8,17 +8,7 @@ import { getPage, PaginationDataResponseDTO } from "@/lib/pagination";
 
 import { CategoryType, ExpenseCategoriesList } from "@/lib/expense-categories";
 
-export type TransactionType = "income" | "expense";
-
-export type Transaction = {
-  id: string;
-  type: TransactionType;
-  amount: string;
-  date: string;
-  category: CategoryType;
-  tags: string[];
-  comment: string;
-};
+import { Transaction } from "@/api/common";
 
 export interface DailyTransactionsList {
   date: string;
@@ -33,9 +23,10 @@ const data = Array.from(Array(24), (_, i) => createDailyTransactions(i));
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const page = +searchParams.get("page") ?? 1;
+  const page = +searchParams.get("page") || 1;
+  const limit = +searchParams.get("limit") || 5;
 
-  return NextResponse.json(getPage(data, page, 5));
+  return NextResponse.json(getPage(data, page, limit));
 }
 
 export function createDailyTransactions(

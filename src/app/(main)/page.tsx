@@ -11,7 +11,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { open } from "@/redux/features/modal.slice";
 import { useAppDispatch } from "@/redux/hooks";
 
-import { DailyTransactionsList, Transaction } from "@/api/transactions/";
+import { Transaction } from "@/api/";
+import { DailyTransactionsList } from "@/api/transactions/";
 import { useGetTransactionsQuery } from "@/redux/services/transactions-api";
 
 import { Skeleton } from "@/components/ui/skeleton";

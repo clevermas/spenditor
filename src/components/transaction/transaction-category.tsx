@@ -1,6 +1,6 @@
 "use client";
 
-import { TransactionType } from "@/app/api/transactions";
+import { TransactionType } from "@/app/api/";
 import { CategoryType } from "@/lib/expense-categories";
 import { titleCase } from "@/lib/utils";
 import { Bus, CircleOff, Home, ShoppingBasket } from "lucide-react";

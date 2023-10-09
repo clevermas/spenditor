@@ -14,7 +14,7 @@ import {
 
 import { close } from "@/redux/features/modal.slice";
 
-import { Transaction } from "@/app/api/transactions/";
+import { Transaction } from "@/app/api/";
 import {
   TransactionForm,
   useTransactionForm,
