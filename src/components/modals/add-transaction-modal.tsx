@@ -60,7 +60,11 @@ export function AddTransactionModal() {
         </DialogHeader>
         <TransactionForm form={form} onSubmit={onSubmit}></TransactionForm>
         <DialogFooter>
-          <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+          <Button
+            type="submit"
+            disabled={updateRequest.status === "pending"}
+            onClick={form.handleSubmit(onSubmit)}
+          >
             Save
           </Button>
         </DialogFooter>

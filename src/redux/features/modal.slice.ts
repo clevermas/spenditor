@@ -3,9 +3,14 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export type ModalType = "addTransaction" | "editTransaction";
 
-type AddTransactionModalData = Transaction;
+type AddTransactionModalData = Exclude<Transaction, { id: string }>;
+type EditTransactionModalData = Transaction;
+type RemoveTransactionModalData = { transactionId: string };
 
-type ModalData = AddTransactionModalData;
+type ModalData =
+  | AddTransactionModalData
+  | EditTransactionModalData
+  | RemoveTransactionModalData;
 
 type ModalState = {
   type: ModalType | null;

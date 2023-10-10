@@ -72,11 +72,17 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-function DataTableActions({ data }: Transaction) {
+function DataTableActions({ data }: { data: Transaction }) {
   const dispatch = useAppDispatch();
 
   function openEditTransactionModal() {
     dispatch(open({ type: "editTransaction", data }));
+  }
+
+  function openRemoveTransactionModal() {
+    dispatch(
+      open({ type: "removeTransaction", data: { transactionId: data?.id } })
+    );
   }
 
   return (
@@ -91,7 +97,9 @@ function DataTableActions({ data }: Transaction) {
           <DropdownMenuItem onClick={openEditTransactionModal}>
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem>Remove</DropdownMenuItem>
+          <DropdownMenuItem onClick={openRemoveTransactionModal}>
+            Remove
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

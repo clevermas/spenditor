@@ -18,3 +18,17 @@ export async function PUT(
 
   return NextResponse.json(transaction, { status: 200 });
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  data.data = data.data.filter((group, groupIndex) => {
+    data.data[groupIndex].transactions = data.data[
+      groupIndex
+    ].transactions.filter((t) => t.id !== params.id);
+    return data.data[groupIndex].transactions.length;
+  });
+
+  return NextResponse.json({ success: true }, { status: 200 });
+}

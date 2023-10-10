@@ -69,6 +69,14 @@ export const transactionsApi = createApi({
       }),
       invalidatesTags: ["Transactions"],
     }),
+
+    removeTransaction: builder.mutation({
+      query: (transactionId) => ({
+        url: `transaction/${transactionId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Transactions"],
+    }),
   }),
 });
 
@@ -76,4 +84,5 @@ export const {
   useGetTransactionsQuery,
   useAddTransactionMutation,
   useUpdateTransactionMutation,
+  useRemoveTransactionMutation,
 } = transactionsApi;
