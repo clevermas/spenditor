@@ -1,7 +1,6 @@
 "use client";
 
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useMemo } from "react";
+import { useCallback, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +12,8 @@ import {
 } from "@/components/ui/dialog";
 
 import { close } from "@/redux/features/modal.slice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useUpdateTransactionMutation } from "@/redux/services/transactions-api";
 
 import { Transaction } from "@/app/api/";
 import {
@@ -21,36 +22,48 @@ import {
 } from "@/components/transaction/transaction-form";
 
 export function EditTransactionModal() {
-  const { type, isOpen, data } = useAppSelector((state) => state.modalReducer);
-
   const { form } = useTransactionForm();
-
+  const { type, isOpen, data } = useAppSelector((state) => state.modalReducer);
+  const [updateTransaction, updateRequest] = useUpdateTransactionMutation();
   const dispatch = useAppDispatch();
-
   const isModalOpen = isOpen && type === "editTransaction";
 
-  useMemo(() => {
-    if (isModalOpen) {
-      setFormInitialData();
-    }
-  }, [isModalOpen]);
-
-  function setFormInitialData() {
+  const setFormInitialData = useCallback(() => {
     Object.keys(data as Transaction)
       .filter((key) => key != "id")
       .forEach((key) => {
         const newValue = key === "date" ? new Date(data[key]) : data[key];
         form.setValue(key, newValue);
       });
-  }
+  }, [form, data]);
 
-  function onSubmit(values) {
-    console.log(values);
-  }
-
-  function handleClose() {
+  const resetForm = useCallback(() => {
     form.reset();
+  }, [form]);
+
+  const handleClose = useCallback(() => {
+    resetForm();
+    updateRequest?.reset();
     dispatch(close());
+  }, [dispatch, updateRequest, resetForm]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setFormInitialData();
+    } else {
+      resetForm();
+    }
+  }, [isModalOpen, resetForm, setFormInitialData]);
+
+  useEffect(() => {
+    if (updateRequest.status === "fulfilled") {
+      handleClose();
+    }
+  }, [updateRequest.status, handleClose]);
+
+  function onSubmit(updatedTransaction) {
+    const result = { ...data, ...updatedTransaction };
+    updateTransaction(result);
   }
 
   return (
@@ -61,7 +74,11 @@ export function EditTransactionModal() {
         </DialogHeader>
         <TransactionForm form={form} onSubmit={onSubmit}></TransactionForm>
         <DialogFooter>
-          <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+          <Button
+            type="submit"
+            disabled={updateRequest.status === "pending"}
+            onClick={form.handleSubmit(onSubmit)}
+          >
             Save
           </Button>
         </DialogFooter>

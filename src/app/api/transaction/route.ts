@@ -1,11 +1,38 @@
-import { createList } from "@/lib/utils";
+import * as moment from "moment";
+
+import { DailyTransactionsList, Transaction } from "@/api/common";
+import { data } from "@/app/api/transactions/";
+import { randomUUID } from "crypto";
 import { NextResponse } from "next/server";
-import { createDailyTransactions, data } from "../transactions/route";
 
 export async function POST(req: Request) {
-  const res = await req.json();
+  let transaction = await req.json();
+  transaction = { id: randomUUID(), ...transaction };
 
-  data.data = createList(24, createDailyTransactions);
+  let groupFound;
 
-  return NextResponse.json({}, { status: 201 });
+  data.data.forEach((group) => {
+    const format = (date) => moment(date).format("M D YYYY");
+    if (format(group.date) === format(transaction.date)) {
+      groupFound = true;
+      group.transactions = [transaction, ...group.transactions];
+    }
+  });
+
+  if (!groupFound) {
+    data.data = [createNewDailyTransactionsGroup(transaction), ...data.data];
+  }
+
+  return NextResponse.json(transaction, { status: 201 });
+}
+
+export function createNewDailyTransactionsGroup(
+  transaction: Transaction
+): DailyTransactionsList {
+  const date = moment(transaction.date).startOf("day").toISOString();
+
+  return {
+    date,
+    transactions: [transaction],
+  };
 }

@@ -34,13 +34,13 @@ export function AddTransactionModal() {
     resetForm();
     updateRequest?.reset();
     dispatch(close());
-  }, [dispatch, form, updateRequest, resetForm]);
+  }, [dispatch, updateRequest, resetForm]);
 
   useEffect(() => {
     if (!isModalOpen) {
       resetForm();
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, resetForm]);
 
   useEffect(() => {
     if (updateRequest.status === "fulfilled") {

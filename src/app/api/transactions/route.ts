@@ -10,19 +10,14 @@ import { getPage, PaginationDataResponseDTO } from "@/lib/pagination";
 
 import { CategoryType, ExpenseCategoriesList } from "@/lib/expense-categories";
 
-import { Transaction } from "@/api/common";
-
-export interface DailyTransactionsList {
-  date: string;
-  transactions: Transaction[];
-}
+import { DailyTransactionsList, Transaction } from "@/api/common";
 
 export type GetTransactionsResponseDTO = PaginationDataResponseDTO<
   DailyTransactionsList[]
 >;
 
 export const data = {
-  data: createList(24, createDailyTransactions),
+  data: createList(24, (i) => createDailyTransactions(i + 1)),
 };
 
 export async function GET(req: Request) {
