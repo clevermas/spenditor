@@ -4,6 +4,8 @@ import { Fragment, useMemo, useState } from "react";
 
 import { Plus } from "lucide-react";
 
+import { UserButton } from "@clerk/nextjs";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -56,9 +58,10 @@ export default function Home() {
         </section>
 
         <Card className="self-end">
-          <CardContent className="flex gap-2 content-center justify-end py-1 px-3 text-slate-600">
+          <CardContent className="flex gap-2 items-center justify-end py-1 px-3 text-slate-600">
             <span className="leading-2">Balance:</span>{" "}
             <Amount value={"12354"}></Amount>
+            <UserButton afterSignOutUrl="/"></UserButton>
           </CardContent>
         </Card>
 
