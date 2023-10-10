@@ -1,6 +1,7 @@
 export interface PaginationDataResponseDTO<T> {
   data: T;
   offset: number;
+  limit: number;
   totalPages: number;
   currentPage: number;
 }
@@ -14,6 +15,7 @@ export function getPage(
   return {
     data: collection.slice(offset, offset + limit),
     offset,
+    limit,
     currentPage: page as number,
     totalPages: Math.ceil(collection.length / limit),
   };

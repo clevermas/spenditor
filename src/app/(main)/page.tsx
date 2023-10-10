@@ -4,18 +4,21 @@ import { Fragment, useMemo, useState } from "react";
 
 import { Plus } from "lucide-react";
 
-import { Amount } from "@/components/amount";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+
+import { Amount } from "@/components/amount";
 
 import { open } from "@/redux/features/modal.slice";
 import { useAppDispatch } from "@/redux/hooks";
+
+import { createList } from "@/lib/utils";
 
 import { Transaction } from "@/api/";
 import { DailyTransactionsList } from "@/api/transactions/";
 import { useGetTransactionsQuery } from "@/redux/services/transactions-api";
 
-import { Skeleton } from "@/components/ui/skeleton";
 import { DataTable } from "./data-table";
 
 export default function Home() {
@@ -24,13 +27,13 @@ export default function Home() {
   const dispatch = useAppDispatch();
 
   const transactions = useMemo(
-    () => flattenTransactions(data?.data ?? []),
+    () => flattenTransactions(data?.data || []),
     [data]
   );
   const totalPages = data?.totalPages ?? 1;
 
-  function openCreateTransactionModal() {
-    dispatch(open({ type: "createTransaction" }));
+  function openAddTransactionModal() {
+    dispatch(open({ type: "addTransaction" }));
   }
 
   function loadMore() {
@@ -45,7 +48,8 @@ export default function Home() {
 
           <Button
             className="rounded h-6 w-6 p-0"
-            onClick={openCreateTransactionModal}
+            disabled={isFetching}
+            onClick={openAddTransactionModal}
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -65,7 +69,7 @@ export default function Home() {
             ) : (
               isFetching && (
                 <div className="py-4 space-y-4">
-                  {Array.from(Array(3), (_, i) => (
+                  {createList(3, (i) => (
                     <Fragment key={i}>
                       <Skeleton className="h-8" />
                       <Skeleton className="h-8 ml-4" />

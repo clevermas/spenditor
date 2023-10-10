@@ -4,6 +4,8 @@ import { randomUUID } from "crypto";
 
 import { NextResponse } from "next/server";
 
+import { createList } from "@/lib/utils";
+
 import { getPage, PaginationDataResponseDTO } from "@/lib/pagination";
 
 import { CategoryType, ExpenseCategoriesList } from "@/lib/expense-categories";
@@ -19,14 +21,16 @@ export type GetTransactionsResponseDTO = PaginationDataResponseDTO<
   DailyTransactionsList[]
 >;
 
-const data = Array.from(Array(24), (_, i) => createDailyTransactions(i));
+export const data = {
+  data: createList(24, createDailyTransactions),
+};
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const page = +searchParams.get("page") || 1;
   const limit = +searchParams.get("limit") || 5;
 
-  return NextResponse.json(getPage(data, page, limit));
+  return NextResponse.json(getPage(data.data, page, limit));
 }
 
 export function createDailyTransactions(
@@ -41,7 +45,7 @@ export function createDailyTransactions(
 }
 
 function createTransactions(date: string): Transaction[] {
-  return Array.from(Array(5), (_, i) => ({
+  return createList(5, (i) => ({
     id: randomUUID(),
     type: "expense",
     amount: getRandomPrice(),

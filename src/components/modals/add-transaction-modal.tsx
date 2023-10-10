@@ -13,24 +13,43 @@ import {
   TransactionForm,
   useTransactionForm,
 } from "@/components/transaction/transaction-form";
+
 import { close } from "@/redux/features/modal.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAddTransactionMutation } from "@/redux/services/transactions-api";
+import { useCallback, useEffect } from "react";
 
-export function CreateTransactionModal() {
+export function AddTransactionModal() {
   const { form } = useTransactionForm();
-
   const { type, isOpen } = useAppSelector((state) => state.modalReducer);
+  const [addTransaction, updateRequest] = useAddTransactionMutation();
   const dispatch = useAppDispatch();
+  const isModalOpen = isOpen && type === "addTransaction";
 
-  const isModalOpen = isOpen && type === "createTransaction";
-
-  function onSubmit(values) {
-    console.log(values);
-  }
-
-  function handleClose() {
+  const resetForm = useCallback(() => {
     form.reset();
+  }, [form]);
+
+  const handleClose = useCallback(() => {
+    resetForm();
+    updateRequest?.reset();
     dispatch(close());
+  }, [dispatch, form, updateRequest, resetForm]);
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      resetForm();
+    }
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    if (updateRequest.status === "fulfilled") {
+      handleClose();
+    }
+  }, [updateRequest.status, handleClose]);
+
+  function onSubmit(transaction) {
+    addTransaction(transaction);
   }
 
   return (

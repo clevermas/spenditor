@@ -12,3 +12,7 @@ export function titleCase(word = "") {
     word[0].toUpperCase() + word.slice(1).toLowerCase()
   );
 }
+
+export function createList<T>(n: number, mapFn: (i: number) => T): T[] {
+  return Array.from(Array(n), (_, i) => mapFn(i));
+}
