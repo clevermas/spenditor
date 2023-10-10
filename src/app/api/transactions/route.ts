@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 
 import { NextResponse } from "next/server";
 
-import { createList } from "@/lib/utils";
+import { createList, randomNItems } from "@/lib/utils";
 
 import { getPage, PaginationDataResponseDTO } from "@/lib/pagination";
 
@@ -40,7 +40,7 @@ export function createDailyTransactions(
 }
 
 function createTransactions(date: string): Transaction[] {
-  return createList(5, (i) => ({
+  return createList(randomNItems(5), (i) => ({
     id: randomUUID(),
     type: "expense",
     amount: getRandomPrice(),
@@ -59,7 +59,7 @@ function getRandomPrice() {
 
 function getRandomExpenseCategory(): CategoryType {
   const categories = ExpenseCategoriesList;
-  const randomIndex = Math.ceil(Math.random() * categories.length);
+  const randomIndex = randomNItems(categories.length);
   const category = categories[randomIndex - 1] as CategoryType;
   return category;
 }

@@ -16,3 +16,7 @@ export function titleCase(word = "") {
 export function createList<T>(n: number, mapFn: (i: number) => T): T[] {
   return Array.from(Array(n), (_, i) => mapFn(i));
 }
+
+export function randomNItems(n) {
+  return Math.ceil(Math.random() * n);
+}
