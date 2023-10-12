@@ -59,8 +59,8 @@ export const DataTable = memo(
             )
           )
         ) : (
-          <div>
-            <div className="h-24 text-center">No results.</div>
+          <div className="h-24 flex justify-center items-center">
+            No results.
           </div>
         )}
       </div>

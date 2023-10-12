@@ -81,7 +81,7 @@ function DataTableActions({ data }: { data: Transaction }) {
 
   function openRemoveTransactionModal() {
     dispatch(
-      open({ type: "removeTransaction", data: { transactionId: data?.id } })
+      open({ type: "removeTransaction", data: { transactionId: data?._id } })
     );
   }
 

@@ -1,38 +1,20 @@
 import * as moment from "moment";
 
-import { DailyTransactionsList, Transaction } from "@/api/common";
-import { data } from "@/app/api/transactions/";
-import { randomUUID } from "crypto";
+import { Transaction } from "@/db/transaction";
+import { currentAccount } from "@/lib/current-account";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   let transaction = await req.json();
-  transaction = { id: randomUUID(), ...transaction };
 
-  let groupFound;
+  const { profile, account } = await currentAccount(true);
 
-  data.data.forEach((group) => {
-    const format = (date) => moment(date).format("M D YYYY");
-    if (format(group.date) === format(transaction.date)) {
-      groupFound = true;
-      group.transactions = [transaction, ...group.transactions];
-    }
+  transaction = await Transaction.create({
+    ...transaction,
+    date: moment(transaction?.date),
+    profileId: profile?.id,
+    accountId: account?.id,
   });
 
-  if (!groupFound) {
-    data.data = [createNewDailyTransactionsGroup(transaction), ...data.data];
-  }
-
   return NextResponse.json(transaction, { status: 201 });
-}
-
-export function createNewDailyTransactionsGroup(
-  transaction: Transaction
-): DailyTransactionsList {
-  const date = moment(transaction.date).startOf("day").toISOString();
-
-  return {
-    date,
-    transactions: [transaction],
-  };
 }

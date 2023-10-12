@@ -63,7 +63,7 @@ export const transactionsApi = createApi({
 
     updateTransaction: builder.mutation({
       query: (transaction) => ({
-        url: `transaction/${transaction.id}`,
+        url: `transaction/${transaction._id}`,
         method: "PUT",
         body: transaction,
       }),

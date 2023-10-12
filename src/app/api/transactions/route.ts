@@ -1,16 +1,14 @@
 import * as moment from "moment";
 
 import { randomUUID } from "crypto";
-
 import { NextResponse } from "next/server";
 
-import { createList, randomNItems } from "@/lib/utils";
-
-import { getPage, PaginationDataResponseDTO } from "@/lib/pagination";
-
+import { DailyTransactionsList } from "@/api/common";
+import { Transaction, TransactionClass } from "@/db/transaction";
+import { currentAccount } from "@/lib/current-account";
 import { CategoryType, ExpenseCategoriesList } from "@/lib/expense-categories";
-
-import { DailyTransactionsList, Transaction } from "@/api/common";
+import { getPage, PaginationDataResponseDTO } from "@/lib/pagination";
+import { createList, randomNItems } from "@/lib/utils";
 
 export type GetTransactionsResponseDTO = PaginationDataResponseDTO<
   DailyTransactionsList[]
@@ -25,7 +23,35 @@ export async function GET(req: Request) {
   const page = +searchParams.get("page") || 1;
   const limit = +searchParams.get("limit") || 5;
 
-  return NextResponse.json(getPage(data.data, page, limit));
+  const account = await currentAccount();
+
+  let data = await Transaction.find(
+    { accountId: account?.id },
+    { __v: 0 }
+  ).sort({ date: -1 });
+
+  data = createDailyTransactionGroups(data);
+
+  return NextResponse.json(getPage(data, page, limit));
+}
+
+function createDailyTransactionGroups(
+  transactions: TransactionClass[]
+): DailyTransactionsList[] {
+  const groups = [] as DailyTransactionsList[];
+
+  transactions.forEach((transaction) => {
+    const date = moment(transaction.date).startOf("day").toISOString();
+
+    let i = groups.findIndex((g) => g.date === date);
+    if (i !== -1) {
+      groups[i].transactions.push(transaction);
+    } else {
+      groups.push({ date, transactions: [transaction] });
+    }
+  });
+
+  return groups;
 }
 
 export function createDailyTransactions(

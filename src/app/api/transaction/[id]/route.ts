@@ -1,4 +1,7 @@
-import { data } from "@/app/api/transactions/";
+import moment from "moment";
+
+import { Transaction } from "@/db/transaction";
+import { currentAccount } from "@/lib/current-account";
 import { NextResponse } from "next/server";
 
 export async function PUT(
@@ -7,28 +10,60 @@ export async function PUT(
 ) {
   const transaction = await req.json();
 
-  data.data.forEach((group, groupIndex) => {
-    const index = group.transactions.findIndex(
-      (transaction) => transaction.id === params.id
-    );
-    if (index !== -1) {
-      data.data[groupIndex].transactions[index] = { ...transaction };
-    }
-  });
+  const account = await currentAccount();
 
-  return NextResponse.json(transaction, { status: 200 });
+  if (!account) {
+    return NextResponse.json(
+      { error: "Account or profile data not found" },
+      { status: 400 }
+    );
+  }
+
+  const transactionId = params.id;
+
+  let data = await Transaction.findByIdAndUpdate(
+    transactionId,
+    { ...transaction, date: moment(transaction?.date) },
+    {
+      new: true,
+    }
+  )
+    .lean()
+    .exec();
+
+  if (!data) {
+    return NextResponse.json(
+      { error: "Transaction not found" },
+      { status: 400 }
+    );
+  }
+
+  return NextResponse.json(data, { status: 200 });
 }
 
 export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  data.data = data.data.filter((group, groupIndex) => {
-    data.data[groupIndex].transactions = data.data[
-      groupIndex
-    ].transactions.filter((t) => t.id !== params.id);
-    return data.data[groupIndex].transactions.length;
-  });
+  const account = await currentAccount();
+
+  if (!account) {
+    return NextResponse.json(
+      { error: "Account or profile data not found" },
+      { status: 400 }
+    );
+  }
+
+  const transactionId = params.id;
+
+  let data = await Transaction.findByIdAndDelete(transactionId).exec();
+
+  if (!data) {
+    return NextResponse.json(
+      { error: "Transaction not found" },
+      { status: 400 }
+    );
+  }
 
   return NextResponse.json({ success: true }, { status: 200 });
 }

@@ -17,6 +17,6 @@ export function getPage(
     offset,
     limit,
     currentPage: page as number,
-    totalPages: Math.ceil(collection.length / limit),
+    totalPages: Math.ceil(collection.length / limit) || 1,
   };
 }
