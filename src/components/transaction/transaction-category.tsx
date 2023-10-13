@@ -1,11 +1,14 @@
 "use client";
 
-import { TransactionType } from "@/app/api/";
-import { CategoryType } from "@/lib/expense-categories";
+import { TransactionTypesEnum } from "@/lib/transaction/transaction";
 import { titleCase } from "@/lib/utils";
 import { Bus, CircleOff, Home, ShoppingBasket } from "lucide-react";
 
-export const ExpenseCategoriesMap = {
+const IncomeCategoriesMap = {
+  uncategorised: <CircleOff />,
+};
+
+const ExpenseCategoriesMap = {
   uncategorised: <CircleOff />,
   food: <ShoppingBasket />,
   home: <Home />,
@@ -16,12 +19,14 @@ export function TransactionCategory({
   type,
   category,
 }: {
-  type: TransactionType;
-  category: CategoryType | string;
+  type: TransactionTypesEnum;
+  category: string;
 }) {
   return (
     <div className="flex content-center gap-2 text-slate-500">
-      {ExpenseCategoriesMap[category as CategoryType] || <CircleOff />}{" "}
+      {(type === TransactionTypesEnum.Expense
+        ? ExpenseCategoriesMap[category]
+        : IncomeCategoriesMap[category]) || <CircleOff />}{" "}
       {titleCase(category)}
     </div>
   );

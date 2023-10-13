@@ -1,5 +1,9 @@
 "use client";
 
+import { useCallback, useEffect } from "react";
+
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,15 +13,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
+
 import {
   TransactionForm,
   useTransactionForm,
 } from "@/components/transaction/transaction-form";
 
 import { close } from "@/redux/features/modal.slice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useAddTransactionMutation } from "@/redux/services/transactions-api";
-import { useCallback, useEffect } from "react";
 
 export function AddTransactionModal() {
   const { form } = useTransactionForm();
@@ -25,6 +29,8 @@ export function AddTransactionModal() {
   const [addTransaction, updateRequest] = useAddTransactionMutation();
   const dispatch = useAppDispatch();
   const isModalOpen = isOpen && type === "addTransaction";
+
+  useErrorToastHandler(updateRequest?.error);
 
   const resetForm = useCallback(() => {
     form.reset();

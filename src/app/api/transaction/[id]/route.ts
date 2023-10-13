@@ -1,44 +1,41 @@
 import moment from "moment";
-
-import { Transaction } from "@/db/transaction";
-import { currentAccount } from "@/lib/current-account";
 import { NextResponse } from "next/server";
+
+import { Transaction, TransactionClass } from "@/db/transaction";
+import { currentAccount } from "@/lib/current-account";
+import { handleMongoDbQuery } from "@/lib/error-handling";
+import { validateTransaction } from "@/lib/transaction/transaction-validation";
 
 export async function PUT(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const transaction = await req.json();
+  let transaction = (await req.json()) as TransactionClass;
 
   const account = await currentAccount();
 
-  if (!account) {
-    return NextResponse.json(
-      { error: "Account or profile data not found" },
-      { status: 400 }
-    );
+  if (account instanceof NextResponse) {
+    return account;
   }
 
   const transactionId = params.id;
 
-  let data = await Transaction.findByIdAndUpdate(
-    transactionId,
-    { ...transaction, date: moment(transaction?.date) },
-    {
-      new: true,
-    }
-  )
-    .lean()
-    .exec();
+  transaction = { ...transaction, date: moment(transaction?.date) };
 
-  if (!data) {
-    return NextResponse.json(
-      { error: "Transaction not found" },
-      { status: 400 }
-    );
+  const validation = validateTransaction(transaction);
+
+  if (validation instanceof NextResponse) {
+    return validation;
   }
 
-  return NextResponse.json(data, { status: 200 });
+  return await handleMongoDbQuery(
+    async () =>
+      await Transaction.findByIdAndUpdate(transactionId, transaction, {
+        new: true,
+      })
+        .lean()
+        .exec()
+  );
 }
 
 export async function DELETE(
@@ -47,23 +44,16 @@ export async function DELETE(
 ) {
   const account = await currentAccount();
 
-  if (!account) {
-    return NextResponse.json(
-      { error: "Account or profile data not found" },
-      { status: 400 }
-    );
+  if (account instanceof NextResponse) {
+    return account;
   }
 
   const transactionId = params.id;
 
-  let data = await Transaction.findByIdAndDelete(transactionId).exec();
-
-  if (!data) {
-    return NextResponse.json(
-      { error: "Transaction not found" },
-      { status: 400 }
-    );
-  }
-
-  return NextResponse.json({ success: true }, { status: 200 });
+  return await handleMongoDbQuery(
+    async () => await Transaction.findByIdAndDelete(transactionId).exec(),
+    {
+      successMap: () => ({ success: true }),
+    }
+  );
 }

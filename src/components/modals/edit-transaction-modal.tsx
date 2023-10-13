@@ -15,6 +15,8 @@ import { close } from "@/redux/features/modal.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useUpdateTransactionMutation } from "@/redux/services/transactions-api";
 
+import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
+
 import { Transaction } from "@/app/api/";
 import {
   TransactionForm,
@@ -27,6 +29,8 @@ export function EditTransactionModal() {
   const [updateTransaction, updateRequest] = useUpdateTransactionMutation();
   const dispatch = useAppDispatch();
   const isModalOpen = isOpen && type === "editTransaction";
+
+  useErrorToastHandler(updateRequest?.error);
 
   const setFormInitialData = useCallback(() => {
     Object.keys(data as Transaction)

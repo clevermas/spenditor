@@ -33,7 +33,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { amountValidation } from "@/components/amount";
 import { TransactionCategory } from "@/components/transaction/transaction-category";
 
 import { cn } from "@/lib/utils";
@@ -44,24 +43,27 @@ import {
   InputChipList,
 } from "@/components/ui/input-chip";
 
-import { ExpenseCategoriesList } from "@/lib/expense-categories";
+import { TransactionTypesEnum } from "@/lib/transaction/transaction";
+import {
+  ExpenseCategoriesList,
+  IncomeCategoriesList,
+} from "@/lib/transaction/transaction-categories";
+import { validateTransactionForm } from "@/lib/transaction/transaction-validation";
 
-export const formSchema = z.object({
-  type: z.string(),
-  category: z.string(),
-  date: z.date({
-    required_error: "Transaction date is required.",
-  }),
-  amount: z
-    .string({
-      required_error: "Amount is required.",
-    })
-    .refine(amountValidation, {
-      message: "Amount must be in format 10.00",
+export const formSchema = z
+  .object({
+    type: z.string(),
+    category: z.string(),
+    date: z.date({
+      required_error: "Transaction date is required.",
     }),
-  tags: z.string().array(),
-  comment: z.string().optional(),
-});
+    amount: z.string({
+      required_error: "Amount is required.",
+    }),
+    tags: z.string().array(),
+    comment: z.string().optional(),
+  })
+  .superRefine(validateTransactionForm);
 
 export const useTransactionForm = () => {
   const defaultValues = {
@@ -79,6 +81,9 @@ export const useTransactionForm = () => {
 };
 
 export function TransactionForm({ form, onSubmit }) {
+  const transactionType = form.getValues("type");
+  const isExpense = form.getValues("type") === TransactionTypesEnum.Expense;
+
   return (
     <Form {...form}>
       <form
@@ -126,10 +131,13 @@ export function TransactionForm({ form, onSubmit }) {
                     <SelectValue placeholder="Type" />
                   </SelectTrigger>
                   <SelectContent>
-                    {ExpenseCategoriesList.map((category) => (
+                    {(isExpense
+                      ? ExpenseCategoriesList
+                      : IncomeCategoriesList
+                    ).map((category) => (
                       <SelectItem key={category} value={category}>
                         <TransactionCategory
-                          type="expense"
+                          type={transactionType}
                           category={category}
                         ></TransactionCategory>
                       </SelectItem>

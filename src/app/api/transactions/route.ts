@@ -1,14 +1,15 @@
 import * as moment from "moment";
 
 import { randomUUID } from "crypto";
-import { NextResponse } from "next/server";
 
 import { DailyTransactionsList } from "@/api/common";
 import { Transaction, TransactionClass } from "@/db/transaction";
 import { currentAccount } from "@/lib/current-account";
-import { CategoryType, ExpenseCategoriesList } from "@/lib/expense-categories";
+import { handleMongoDbQuery } from "@/lib/error-handling";
 import { getPage, PaginationDataResponseDTO } from "@/lib/pagination";
+import { ExpenseCategoriesList } from "@/lib/transaction/transaction-categories";
 import { createList, randomNItems } from "@/lib/utils";
+import { NextResponse } from "next/server";
 
 export type GetTransactionsResponseDTO = PaginationDataResponseDTO<
   DailyTransactionsList[]
@@ -25,14 +26,20 @@ export async function GET(req: Request) {
 
   const account = await currentAccount();
 
-  let data = await Transaction.find(
-    { accountId: account?.id },
-    { __v: 0 }
-  ).sort({ date: -1 });
+  if (account instanceof NextResponse) {
+    return account;
+  }
 
-  data = createDailyTransactionGroups(data);
-
-  return NextResponse.json(getPage(data, page, limit));
+  return await handleMongoDbQuery(
+    async () =>
+      await Transaction.find({ accountId: account?.id }, { __v: 0 }).sort({
+        date: -1,
+      }),
+    {
+      successMap: (data) =>
+        getPage(createDailyTransactionGroups(data), page, limit),
+    }
+  );
 }
 
 function createDailyTransactionGroups(
@@ -83,9 +90,9 @@ function getRandomPrice() {
   return (-Math.random() * 500).toFixed(2);
 }
 
-function getRandomExpenseCategory(): CategoryType {
+function getRandomExpenseCategory() {
   const categories = ExpenseCategoriesList;
   const randomIndex = randomNItems(categories.length);
-  const category = categories[randomIndex - 1] as CategoryType;
+  const category = categories[randomIndex - 1];
   return category;
 }

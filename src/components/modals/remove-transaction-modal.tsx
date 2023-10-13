@@ -12,6 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
+
 import { close } from "@/redux/features/modal.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRemoveTransactionMutation } from "@/redux/services/transactions-api";
@@ -21,6 +23,8 @@ export function RemoveTransactionModal() {
   const [removeTransaction, removeRequest] = useRemoveTransactionMutation();
   const dispatch = useAppDispatch();
   const isModalOpen = isOpen && type === "removeTransaction";
+
+  useErrorToastHandler(removeRequest?.error);
 
   const handleClose = useCallback(() => {
     removeRequest?.reset();

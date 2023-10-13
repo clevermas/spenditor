@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/redux/provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
@@ -22,6 +23,7 @@ export default function RootLayout({
         <ClerkProvider>
           <Providers>{children}</Providers>
         </ClerkProvider>
+        <Toaster />
       </body>
     </html>
   );

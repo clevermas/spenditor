@@ -1,16 +1,17 @@
 import { Account, AccountClass } from "@/db/account";
 import { ProfileClass } from "@/db/profile";
 import { currentProfile } from "@/lib/current-profile";
+import { NextResponse } from "next/server";
 
 export const currentAccount = async (
   withProfile = false
 ): Promise<
-  AccountClass | { profile: ProfileClass; account: AccountClass } | null
+  AccountClass | { profile: ProfileClass; account: AccountClass } | NextResponse
 > => {
   const profile = await currentProfile();
 
-  if (!profile) {
-    return null;
+  if (profile instanceof NextResponse) {
+    return profile;
   }
 
   let account = await Account.find({ profileId: profile.id });

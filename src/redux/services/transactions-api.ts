@@ -33,7 +33,7 @@ export const transactionsApi = createApi({
         } catch (e) {
           console.error(e);
         }
-        return { data: query.data };
+        return { data: query?.data, error: query?.error };
       },
       providesTags: () => ["Transactions"],
       merge: (cache, newItems) => {

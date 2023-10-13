@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { Amount } from "@/components/amount";
+import { NoResults } from "@/components/no-results";
 
 import { open } from "@/redux/features/modal.slice";
 import { useAppDispatch } from "@/redux/hooks";
@@ -21,12 +22,16 @@ import { Transaction } from "@/api/";
 import { DailyTransactionsList } from "@/api/transactions/";
 import { useGetTransactionsQuery } from "@/redux/services/transactions-api";
 
+import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
 import { DataTable } from "./data-table";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, isSuccess, isFetching } = useGetTransactionsQuery(currentPage);
+  const { data, error, isSuccess, isFetching } =
+    useGetTransactionsQuery(currentPage);
   const dispatch = useAppDispatch();
+
+  useErrorToastHandler(error);
 
   const transactions = useMemo(
     () => flattenTransactions(data?.data || []),
@@ -69,20 +74,20 @@ export default function Home() {
           <CardContent className="pb-0">
             {isSuccess ? (
               <DataTable data={transactions}></DataTable>
+            ) : isFetching ? (
+              <div className="py-4 space-y-4">
+                {createList(3, (i) => (
+                  <Fragment key={i}>
+                    <Skeleton className="h-8" />
+                    <Skeleton className="h-8 ml-4" />
+                    <Skeleton className="h-8 ml-4" />
+                    <Skeleton className="h-8 ml-4" />
+                    <Skeleton className="h-8 ml-4" />
+                  </Fragment>
+                ))}
+              </div>
             ) : (
-              isFetching && (
-                <div className="py-4 space-y-4">
-                  {createList(3, (i) => (
-                    <Fragment key={i}>
-                      <Skeleton className="h-8" />
-                      <Skeleton className="h-8 ml-4" />
-                      <Skeleton className="h-8 ml-4" />
-                      <Skeleton className="h-8 ml-4" />
-                      <Skeleton className="h-8 ml-4" />
-                    </Fragment>
-                  ))}
-                </div>
-              )
+              error && <NoResults></NoResults>
             )}
 
             {currentPage !== totalPages && (

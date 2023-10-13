@@ -10,6 +10,9 @@ import {
 } from "@tanstack/react-table";
 
 import { cn } from "@/lib/utils";
+
+import { NoResults } from "@/components/no-results";
+
 import { columns } from "./columns";
 
 interface DataTableProps<TData, TValue> {
@@ -59,9 +62,7 @@ export const DataTable = memo(
             )
           )
         ) : (
-          <div className="h-24 flex justify-center items-center">
-            No results.
-          </div>
+          <NoResults></NoResults>
         )}
       </div>
     );
