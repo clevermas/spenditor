@@ -25,7 +25,7 @@ export const transactionsApi = createApi({
           }
 
           query = await baseQuery({
-            url: `/transactions/?${new URLSearchParams({
+            url: `/account/?${new URLSearchParams({
               page,
               ...(limit ? { limit } : {}),
             }).toString()}`,
@@ -37,15 +37,19 @@ export const transactionsApi = createApi({
       },
       providesTags: () => ["Transactions"],
       merge: (cache, newItems) => {
-        const isRevalidatingAllTransactions =
-          newItems.currentPage === 1 &&
-          newItems.limit === cache.currentPage * cache.limit;
+        const cacheData = cache.recentTransactions;
+        const newItemsData = newItems?.recentTransactions;
 
-        if (newItems.currentPage > cache.currentPage) {
-          cache.data.push(...newItems.data);
-          cache.currentPage = newItems.currentPage;
+        const isRevalidatingAllTransactions =
+          newItemsData?.currentPage === 1 &&
+          newItemsData?.limit === cacheData.currentPage * cacheData.limit;
+
+        if (newItemsData?.currentPage > cacheData.currentPage) {
+          cache.recentTransactions.data.push(...newItemsData?.data);
+          cache.recentTransactions.currentPage = newItemsData?.currentPage;
         } else if (isRevalidatingAllTransactions) {
-          cache.data = [...newItems.data];
+          cache.recentTransactions.data = [...newItemsData?.data];
+          cache.balance = newItems?.balance;
         }
       },
       serializeQueryArgs: ({ endpointName }) => endpointName,

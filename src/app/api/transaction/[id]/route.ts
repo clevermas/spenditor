@@ -1,6 +1,7 @@
 import moment from "moment";
 import { NextResponse } from "next/server";
 
+import { Account } from "@/db/account";
 import { Transaction, TransactionClass } from "@/db/transaction";
 import { currentAccount } from "@/lib/current-account";
 import { handleMongoDbQuery } from "@/lib/error-handling";
@@ -13,7 +14,6 @@ export async function PUT(
   let transaction = (await req.json()) as TransactionClass;
 
   const account = await currentAccount();
-
   if (account instanceof NextResponse) {
     return account;
   }
@@ -23,18 +23,36 @@ export async function PUT(
   transaction = { ...transaction, date: moment(transaction?.date) };
 
   const validation = validateTransaction(transaction);
-
   if (validation instanceof NextResponse) {
     return validation;
   }
 
+  const oldTransaction = await handleMongoDbQuery(
+    async () =>
+      await Transaction.findByIdAndUpdate(transactionId, transaction)
+        .lean()
+        .exec(),
+    {
+      withoutResponse: true,
+    }
+  );
+  if (oldTransaction instanceof NextResponse) {
+    return oldTransaction;
+  }
+
+  const newBalance = +Number(
+    +account?.balance - +oldTransaction?.amount + +transaction?.amount
+  ).toFixed(2);
+
   return await handleMongoDbQuery(
     async () =>
-      await Transaction.findByIdAndUpdate(transactionId, transaction, {
-        new: true,
-      })
-        .lean()
-        .exec()
+      await Account.findByIdAndUpdate(account?.id, {
+        balance: newBalance,
+      }).exec(),
+    {
+      successMap: () => transaction,
+      successStatus: 201,
+    }
   );
 }
 
@@ -43,15 +61,32 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const account = await currentAccount();
-
   if (account instanceof NextResponse) {
     return account;
   }
 
   const transactionId = params.id;
 
+  const transaction = await handleMongoDbQuery(
+    async () =>
+      await Transaction.findByIdAndDelete(transactionId).lean().exec(),
+    {
+      withoutResponse: true,
+    }
+  );
+  if (transaction instanceof NextResponse) {
+    return transaction;
+  }
+
+  const newBalance = +Number(+account?.balance - +transaction?.amount).toFixed(
+    2
+  );
+
   return await handleMongoDbQuery(
-    async () => await Transaction.findByIdAndDelete(transactionId).exec(),
+    async () =>
+      await Account.findByIdAndUpdate(account?.id, {
+        balance: newBalance,
+      }).exec(),
     {
       successMap: () => ({ success: true }),
     }

@@ -19,7 +19,7 @@ import { useAppDispatch } from "@/redux/hooks";
 import { createList } from "@/lib/utils";
 
 import { Transaction } from "@/api/";
-import { DailyTransactionsList } from "@/api/transactions/";
+import { DailyTransactionsList } from "@/lib/transactions/transaction";
 import { useGetTransactionsQuery } from "@/redux/services/transactions-api";
 
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
@@ -34,10 +34,10 @@ export default function Home() {
   useErrorToastHandler(error);
 
   const transactions = useMemo(
-    () => flattenTransactions(data?.data || []),
-    [data]
+    () => flattenTransactions(data?.recentTransactions?.data || []),
+    [data?.recentTransactions]
   );
-  const totalPages = data?.totalPages ?? 1;
+  const totalPages = data?.recentTransactions.totalPages || 1;
 
   function openAddTransactionModal() {
     dispatch(open({ type: "addTransaction" }));
@@ -65,7 +65,7 @@ export default function Home() {
         <Card className="self-end">
           <CardContent className="flex gap-2 items-center justify-end py-1 px-3 text-slate-600">
             <span className="leading-2">Balance:</span>{" "}
-            <Amount value={"12354"}></Amount>
+            <Amount value={+data?.balance} currency={data?.currency}></Amount>
             <UserButton afterSignOutUrl="/"></UserButton>
           </CardContent>
         </Card>

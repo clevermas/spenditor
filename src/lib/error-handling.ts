@@ -17,11 +17,13 @@ export async function handleMongoDbQuery(
     notFound = ["Item not found error", "Item with requested id not found"],
     successMap = (result) => result,
     successStatus = 200,
+    withoutResponse = false,
   }: {
     errorStatus?: number;
     notFound?: [string, string];
     successMap?: (result: any) => any;
     successStatus?: number;
+    withoutResponse?: boolean;
   } = {}
 ) {
   let data;
@@ -34,5 +36,9 @@ export async function handleMongoDbQuery(
     return throwError(notFound, errorStatus);
   }
 
-  return NextResponse.json(successMap(data), { status: successStatus });
+  if (!withoutResponse) {
+    return NextResponse.json(successMap(data), { status: successStatus });
+  } else {
+    return successMap(data);
+  }
 }

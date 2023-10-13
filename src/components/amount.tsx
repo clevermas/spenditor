@@ -1,8 +1,14 @@
-export function Amount({ value }: { value: number }) {
+export function Amount({
+  value,
+  currency = "USD",
+}: {
+  value: number;
+  currency: string;
+}) {
   const amount = new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
-  }).format(value);
+    currency,
+  }).format(isNaN(value) ? 0 : value);
 
   return <div className="text-slate-700 text-right">{amount}</div>;
 }
