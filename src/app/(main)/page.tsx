@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 
 import { Plus } from "lucide-react";
 
@@ -18,7 +18,10 @@ import { createList } from "@/lib/utils";
 
 import { Transaction } from "@/api/";
 import { DailyTransactionsList } from "@/lib/transactions/transaction";
-import { useGetTransactionsQuery } from "@/redux/services/transactions-api";
+import {
+  transactionsApi,
+  useGetTransactionsQuery,
+} from "@/redux/services/transactions-api";
 
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
 import { DataTable } from "./data-table";
@@ -28,6 +31,8 @@ export default function Home() {
   const { data, error, isSuccess, isFetching } =
     useGetTransactionsQuery(currentPage);
   const dispatch = useAppDispatch();
+
+  useEffect(() => () => dispatch(transactionsApi.util.resetApiState()), []);
 
   useErrorToastHandler(error);
 
@@ -46,9 +51,9 @@ export default function Home() {
   }
 
   return (
-    <main className="flex justify-center">
+    <section className="flex justify-center">
       <div className="flex flex-wrap flex-col sm:flex-row gap-2 w-full lg:w-[768px] px-4 lg:px-8 py-2">
-        <section className="grow flex gap-2">
+        <div className="grow flex gap-2">
           <h1 className="text-lg">Recent transactions</h1>
 
           <Button
@@ -58,14 +63,23 @@ export default function Home() {
           >
             <Plus className="h-4 w-4" />
           </Button>
-        </section>
+        </div>
 
-        <Card className="self-end">
-          <CardContent className="flex gap-2 items-center justify-end py-1 px-3">
-            <span className="leading-2">Balance:</span>{" "}
-            <Amount value={+data?.balance} currency={data?.currency}></Amount>
-          </CardContent>
-        </Card>
+        {isFetching ? (
+          <Skeleton className="h-6 w-[96px] self-end" />
+        ) : (
+          !error && (
+            <Card className="self-end">
+              <CardContent className="flex gap-2 items-center justify-end py-1 px-3">
+                <span className="leading-2">Balance:</span>{" "}
+                <Amount
+                  value={+data?.balance}
+                  currency={data?.currency}
+                ></Amount>
+              </CardContent>
+            </Card>
+          )
+        )}
 
         <Card className="w-full">
           <CardContent className="pb-0">
@@ -97,7 +111,7 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
-    </main>
+    </section>
   );
 }
 
