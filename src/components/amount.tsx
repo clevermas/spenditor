@@ -10,5 +10,5 @@ export function Amount({
     currency,
   }).format(isNaN(value) ? 0 : value);
 
-  return <div className="text-slate-700 text-right">{amount}</div>;
+  return <div className="text-right">{amount}</div>;
 }

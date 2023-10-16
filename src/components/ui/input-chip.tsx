@@ -96,7 +96,7 @@ const InputChipList = React.forwardRef<
   }
 
   return (
-    <div ref={ref} className={cn("space-y-2", className)} {...props}>
+    <div ref={ref} className={cn("space-x-2", className)} {...props}>
       {chips.map((chip: string) => (
         <Badge key={chip} className="font-light">
           {chip.toUpperCase()}

@@ -23,7 +23,7 @@ export function TransactionCategory({
   category: string;
 }) {
   return (
-    <div className="flex content-center gap-2 text-slate-500">
+    <div className="flex items-center gap-2">
       {(type === TransactionTypesEnum.Expense
         ? ExpenseCategoriesMap[category]
         : IncomeCategoriesMap[category]) || <CircleOff />}{" "}

@@ -41,7 +41,7 @@ export const DataTable = memo(
               <div
                 key={row.id}
                 className={
-                  "group grid gap-0 md:gap-2 items-center py-0 pt-2 md:pt-0 -mx-6 px-6 md:h-14 cursor-pointer hover:bg-slate-100 " +
+                  "group grid gap-0 md:gap-2 items-center py-0 pt-2 md:pt-0 -mx-6 px-6 md:h-14 cursor-pointer hover:bg-accent/50 " +
                   "grid-cols-[minmax(58%,_1fr)_30%_16px] md:grid-cols-[minmax(175px,_30%)_minmax(100px,_1fr)_100px_16px]"
                 }
               >
@@ -50,8 +50,8 @@ export const DataTable = memo(
                     key={cell.id}
                     className={
                       i === 1
-                        ? "order-last flex items-center h-8 col-span-3 -mx-6 px-6 bg-slate-50 group-hover:bg-inherit " +
-                          "md:order-none md:px-0 md:mx-0 md:col-span-1 md:bg-inherit"
+                        ? "order-last flex items-center h-8 col-span-3 -mx-6 px-6 bg-accent/70 dark:bg-accent/20 md:bg-transparent md:dark:bg-transparent group-hover:bg-transparent " +
+                          "md:order-none md:px-0 md:mx-0 md:col-span-1"
                         : ""
                     }
                   >
@@ -90,7 +90,7 @@ export function DailyTransactionsDividerRow({
     momentDate.format("DD MMM");
 
   return (
-    <h3 className={cn("text-base text-slate-800 py-4 -mx-6 px-6", className)}>
+    <h3 className={cn("text-base py-4 -mx-6 px-6", className)}>
       {isEqualDay() ? "Today" : isEqualDay(1) ? "Yesterday" : formatDate()}
     </h3>
   );

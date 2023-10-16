@@ -88,7 +88,7 @@ export function TransactionForm({ form, onSubmit }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-col-1 gap-4 text-slate-500"
+        className="grid grid-col-1 gap-4"
       >
         <FormField
           control={form.control}

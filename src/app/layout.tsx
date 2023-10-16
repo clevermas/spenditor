@@ -1,3 +1,5 @@
+import ModalProvider from "@/components/providers/modal-provider";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/redux/provider";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -18,11 +20,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ClerkProvider>
-          <Providers>{children}</Providers>
-        </ClerkProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ClerkProvider>
+            <Providers>
+              <ModalProvider>{children}</ModalProvider>
+            </Providers>
+          </ClerkProvider>
+        </ThemeProvider>
         <Toaster />
       </body>
     </html>

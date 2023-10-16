@@ -4,8 +4,6 @@ import { Fragment, useMemo, useState } from "react";
 
 import { Plus } from "lucide-react";
 
-import { UserButton } from "@clerk/nextjs";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -51,7 +49,7 @@ export default function Home() {
     <main className="flex justify-center">
       <div className="flex flex-wrap flex-col sm:flex-row gap-2 w-full lg:w-[768px] px-4 lg:px-8 py-2">
         <section className="grow flex gap-2">
-          <h1 className="text-lg text-slate-950">Recent transactions</h1>
+          <h1 className="text-lg">Recent transactions</h1>
 
           <Button
             className="rounded h-6 w-6 p-0"
@@ -63,10 +61,9 @@ export default function Home() {
         </section>
 
         <Card className="self-end">
-          <CardContent className="flex gap-2 items-center justify-end py-1 px-3 text-slate-600">
+          <CardContent className="flex gap-2 items-center justify-end py-1 px-3">
             <span className="leading-2">Balance:</span>{" "}
             <Amount value={+data?.balance} currency={data?.currency}></Amount>
-            <UserButton afterSignOutUrl="/"></UserButton>
           </CardContent>
         </Card>
 

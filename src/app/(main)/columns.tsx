@@ -45,13 +45,13 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => {
       const tags = row.getValue("tags");
       return (
-        <>
+        <div className="space-x-2">
           {tags.map((tag) => (
             <Badge key={tag} className="font-light">
               {tag.toUpperCase()}
             </Badge>
           ))}
-        </>
+        </div>
       );
     },
   },
