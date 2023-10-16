@@ -1,8 +1,30 @@
 export const ExpenseCategoriesList = [
   "uncategorised",
-  "food",
+  "food and supermarkets",
   "home",
   "transport",
+  "clothes and shoes",
+  "health",
+  "sport",
+  "cafe and restaurants",
+  "automobile",
+  "taxi",
+  "pets",
+  "children",
+  "beauty",
+  "travel",
+  "telecom",
+  "internet",
+  "entertainment",
+  "mobile phone",
+  "technology",
+  "other",
 ];
 
-export const IncomeCategoriesList = ["uncategorised"];
+export const IncomeCategoriesList = [
+  "uncategorised",
+  "salary",
+  "business",
+  "part-time job",
+  "other",
+];
