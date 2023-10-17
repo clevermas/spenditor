@@ -32,15 +32,27 @@ export default function Home() {
     useGetTransactionsQuery(currentPage);
   const dispatch = useAppDispatch();
 
-  useEffect(() => () => dispatch(transactionsApi.util.resetApiState()), []);
-
-  useErrorToastHandler(error);
-
   const transactions = useMemo(
     () => flattenTransactions(data?.recentTransactions?.data || []),
     [data?.recentTransactions]
   );
-  const totalPages = data?.recentTransactions.totalPages || 1;
+  const totalPages = data?.recentTransactions?.totalPages || 1;
+  const updatedCurrentPage = data?.recentTransactions?.currentPage || 1;
+
+  useEffect(
+    () => () => {
+      dispatch(transactionsApi.util.resetApiState());
+    },
+    [dispatch]
+  );
+
+  useEffect(() => {
+    if (currentPage !== updatedCurrentPage) {
+      setCurrentPage(updatedCurrentPage);
+    }
+  }, [currentPage, updatedCurrentPage]);
+
+  useErrorToastHandler(error);
 
   function openAddTransactionModal() {
     dispatch(open({ type: "addTransaction" }));
@@ -65,7 +77,7 @@ export default function Home() {
           </Button>
         </div>
 
-        {isFetching ? (
+        {isFetching && !isSuccess ? (
           <Skeleton className="h-6 w-[96px] self-end" />
         ) : (
           !error && (

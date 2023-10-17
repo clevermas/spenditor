@@ -20,7 +20,9 @@ export const transactionsApi = createApi({
           )?.length;
 
           if (isRevalidatingAllTransactions) {
-            const data = state.transactionsApi.queries.getTransactions.data;
+            const data =
+              state.transactionsApi.queries.getTransactions.data
+                ?.recentTransactions;
             page = 1;
             limit = data.currentPage * data.limit;
           }
@@ -37,20 +39,29 @@ export const transactionsApi = createApi({
         return { data: query?.data, error: query?.error };
       },
       providesTags: () => ["Transactions"],
-      merge: (cache, newItems) => {
+      merge: (cache, newTransactionsData) => {
         const cacheData = cache.recentTransactions;
-        const newItemsData = newItems?.recentTransactions;
+        const newData = newTransactionsData?.recentTransactions;
 
         const isRevalidatingAllTransactions =
-          newItemsData?.currentPage === 1 &&
-          newItemsData?.limit === cacheData.currentPage * cacheData.limit;
+          newData?.currentPage === 1 &&
+          newData?.limit === cacheData.currentPage * cacheData.limit;
 
-        if (newItemsData?.currentPage > cacheData.currentPage) {
-          cache.recentTransactions.data.push(...newItemsData?.data);
-          cache.recentTransactions.currentPage = newItemsData?.currentPage;
+        if (newData?.currentPage > cacheData.currentPage) {
+          cache.recentTransactions.data.push(...newData?.data);
+          cache.recentTransactions.currentPage = newData?.currentPage;
+          cache.recentTransactions.totalPages = newData.totalPages;
         } else if (isRevalidatingAllTransactions) {
-          cache.recentTransactions.data = [...newItemsData?.data];
-          cache.balance = newItems?.balance;
+          cache.recentTransactions.data = [...newData?.data];
+          cache.balance = newTransactionsData?.balance;
+          cache.recentTransactions.totalPages =
+            newData.totalPages > 1
+              ? cache.recentTransactions.totalPages + 1
+              : Math.ceil(newData.data?.length / cacheData.limit);
+          cache.recentTransactions.currentPage =
+            cacheData.currentPage > cache.recentTransactions.totalPages
+              ? cache.recentTransactions.totalPages
+              : cacheData.currentPage;
         }
       },
       serializeQueryArgs: ({ endpointName }) => endpointName,
