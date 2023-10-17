@@ -20,7 +20,8 @@ import {
   useTransactionForm,
 } from "@/components/transaction/transaction-form";
 
-import { close } from "@/redux/features/modal.slice";
+import { TransactionClass } from "@/db/transaction";
+import { close, ModalType } from "@/redux/features/modal.slice";
 import { useAddTransactionMutation } from "@/redux/services/transactions-api";
 
 export function AddTransactionModal() {
@@ -28,7 +29,9 @@ export function AddTransactionModal() {
   const { type, isOpen } = useAppSelector((state) => state.modalReducer);
   const [addTransaction, updateRequest] = useAddTransactionMutation();
   const dispatch = useAppDispatch();
-  const isModalOpen = isOpen && type === "addTransaction";
+  const isModalOpen = (isOpen &&
+    type &&
+    type === ("addTransaction" as ModalType)) as boolean | undefined;
 
   useErrorToastHandler(updateRequest?.error);
 
@@ -54,7 +57,9 @@ export function AddTransactionModal() {
     }
   }, [updateRequest.status, handleClose]);
 
-  function onSubmit(transaction) {
+  function onSubmit(
+    transaction: Partial<TransactionClass | { tags: string[] }>
+  ) {
     addTransaction(transaction);
   }
 

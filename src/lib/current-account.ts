@@ -8,15 +8,18 @@ export const currentAccount = async (
 ): Promise<
   AccountClass | { profile: ProfileClass; account: AccountClass } | NextResponse
 > => {
+  let account: AccountClass;
   const profile = await currentProfile();
 
   if (profile instanceof NextResponse) {
     return profile;
   }
 
-  let account = await Account.find({ profileId: profile.id });
+  const existingAccount = await Account.find({
+    profileId: profile.id,
+  });
 
-  if (!account?.length) {
+  if (!existingAccount.length) {
     account = await Account.create({
       name: "Cash",
       profileId: profile.id,
@@ -24,10 +27,8 @@ export const currentAccount = async (
       balance: "0",
     });
   } else {
-    account = account[0];
+    account = existingAccount[0];
   }
 
-  return withProfile
-    ? { account: account as AccountClass, profile: profile as ProfileClass }
-    : account;
+  return withProfile ? { account, profile } : account;
 };

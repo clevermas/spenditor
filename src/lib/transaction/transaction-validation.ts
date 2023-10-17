@@ -1,4 +1,4 @@
-import * as moment from "moment";
+import moment from "moment";
 import * as z from "zod";
 
 import { throwError } from "@/lib/error-handling";
@@ -32,7 +32,7 @@ const Errors = [
 
 export function throwValidationError(index, ctx?, fieldName?) {
   if (!ctx) {
-    return throwError(Errors[index]);
+    return throwError(Errors[index] as [string, string]);
   } else {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -45,7 +45,7 @@ export function throwValidationError(index, ctx?, fieldName?) {
 export function validateTransaction(
   transaction: TransactionClass,
   ctx?
-): NextResponse | undefined {
+): NextResponse | void {
   if (!TransactionTypesEnum[titleCase(transaction.type)]) {
     return throwValidationError(0, ctx, "type");
   }

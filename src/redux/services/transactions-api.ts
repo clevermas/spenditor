@@ -13,7 +13,8 @@ export const transactionsApi = createApi({
         let query, limit;
 
         try {
-          const state = store.getState();
+          // see: https://github.com/reduxjs/redux-toolkit/issues/1685
+          const state = store.getState() as any;
           const isRevalidatingAllTransactions = !!Object.keys(
             state.transactionsApi.mutations
           )?.length;

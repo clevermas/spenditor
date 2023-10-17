@@ -1,11 +1,12 @@
-import { Transaction } from "@/app/api/";
+import { TransactionClass } from "@/db/transaction";
+
 import { createSlice } from "@reduxjs/toolkit";
 
 export type ModalType = "addTransaction" | "editTransaction";
 
-type AddTransactionModalData = Exclude<Transaction, { id: string }>;
-type EditTransactionModalData = Transaction;
-type RemoveTransactionModalData = { transactionId: string };
+export type AddTransactionModalData = Exclude<TransactionClass, { id: string }>;
+export type EditTransactionModalData = TransactionClass;
+export type RemoveTransactionModalData = { transactionId: string };
 
 type ModalData =
   | AddTransactionModalData

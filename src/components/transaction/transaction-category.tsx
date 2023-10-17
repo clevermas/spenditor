@@ -28,7 +28,7 @@ import {
   Watch,
 } from "lucide-react";
 
-const IncomeCategoriesMap = {
+export const IncomeCategoriesMap = {
   uncategorised: <CircleOff />,
   salary: <Wallet />,
   business: <CircleDollarSign />,
@@ -36,7 +36,7 @@ const IncomeCategoriesMap = {
   other: <Clipboard />,
 };
 
-const ExpenseCategoriesMap = {
+export const ExpenseCategoriesMap = {
   uncategorised: <CircleOff />,
   "food and supermarkets": <ShoppingBasket />,
   home: <Home />,
@@ -63,14 +63,19 @@ export function TransactionCategory({
   type,
   category,
 }: {
-  type: TransactionTypesEnum;
-  category: string;
+  type: string | TransactionTypesEnum;
+  category:
+    | string
+    | keyof typeof ExpenseCategoriesMap
+    | keyof typeof IncomeCategoriesMap;
 }) {
   return (
     <div className="flex items-center gap-2">
       {(type === TransactionTypesEnum.Expense
-        ? ExpenseCategoriesMap[category]
-        : IncomeCategoriesMap[category]) || <CircleOff />}{" "}
+        ? ExpenseCategoriesMap[category as keyof typeof ExpenseCategoriesMap]
+        : IncomeCategoriesMap[
+            category as keyof typeof IncomeCategoriesMap
+          ]) || <CircleOff />}{" "}
       {titleCase(category)}
     </div>
   );

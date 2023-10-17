@@ -14,7 +14,11 @@ import {
 
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
 
-import { close } from "@/redux/features/modal.slice";
+import {
+  close,
+  ModalType,
+  RemoveTransactionModalData,
+} from "@/redux/features/modal.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRemoveTransactionMutation } from "@/redux/services/transactions-api";
 
@@ -22,7 +26,9 @@ export function RemoveTransactionModal() {
   const { type, isOpen, data } = useAppSelector((state) => state.modalReducer);
   const [removeTransaction, removeRequest] = useRemoveTransactionMutation();
   const dispatch = useAppDispatch();
-  const isModalOpen = isOpen && type === "removeTransaction";
+  const isModalOpen = (isOpen &&
+    type &&
+    type === ("removeTransaction" as ModalType)) as boolean | undefined;
 
   useErrorToastHandler(removeRequest?.error);
 
@@ -38,7 +44,7 @@ export function RemoveTransactionModal() {
   }, [removeRequest.status, handleClose]);
 
   function onSubmit() {
-    removeTransaction(data.transactionId);
+    removeTransaction((data as RemoveTransactionModalData).transactionId);
   }
 
   return (

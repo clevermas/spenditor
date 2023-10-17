@@ -11,33 +11,39 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { close } from "@/redux/features/modal.slice";
+import { close, ModalType } from "@/redux/features/modal.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useUpdateTransactionMutation } from "@/redux/services/transactions-api";
 
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
 
-import { Transaction } from "@/app/api/";
 import {
   TransactionForm,
   useTransactionForm,
 } from "@/components/transaction/transaction-form";
+import { TransactionClass } from "@/db/transaction";
 
 export function EditTransactionModal() {
   const { form } = useTransactionForm();
   const { type, isOpen, data } = useAppSelector((state) => state.modalReducer);
   const [updateTransaction, updateRequest] = useUpdateTransactionMutation();
   const dispatch = useAppDispatch();
-  const isModalOpen = isOpen && type === "editTransaction";
+  const isModalOpen = (isOpen &&
+    type &&
+    type === ("editTransaction" as ModalType)) as boolean | undefined;
 
   useErrorToastHandler(updateRequest?.error);
 
   const setFormInitialData = useCallback(() => {
-    Object.keys(data as Transaction)
+    const transaction = data as TransactionClass;
+    Object.keys(transaction)
       .filter((key) => key != "id")
       .forEach((key) => {
-        const newValue = key === "date" ? new Date(data[key]) : data[key];
-        form.setValue(key, newValue);
+        const newValue =
+          key === "date"
+            ? new Date(transaction[key as "date"])
+            : transaction[key as keyof TransactionClass];
+        form.setValue(key as any, newValue);
       });
   }, [form, data]);
 
@@ -65,7 +71,9 @@ export function EditTransactionModal() {
     }
   }, [updateRequest.status, handleClose]);
 
-  function onSubmit(updatedTransaction) {
+  function onSubmit(
+    updatedTransaction: Partial<TransactionClass | { tags: string[] }>
+  ) {
     const result = { ...data, ...updatedTransaction };
     updateTransaction(result);
   }

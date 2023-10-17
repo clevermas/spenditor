@@ -1,11 +1,12 @@
-import * as moment from "moment";
+import moment from "moment";
 
-import { DailyTransactionsList } from "@/api/common";
 import { Transaction, TransactionClass } from "@/db/transaction";
 import { currentAccount } from "@/lib/current-account";
 import { handleMongoDbQuery } from "@/lib/error-handling";
 import { getPage, PaginationDataResponseDTO } from "@/lib/pagination";
 
+import { AccountClass } from "@/db/account";
+import { DailyTransactionsList } from "@/lib/transaction/transaction";
 import { NextResponse } from "next/server";
 
 export interface GetAccountDataResponseDTO {
@@ -17,10 +18,10 @@ export interface GetAccountDataResponseDTO {
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const page = +searchParams.get("page") || 1;
-  const limit = +searchParams.get("limit") || 5;
+  const page = +(searchParams.get("page") || 1);
+  const limit = +(searchParams.get("limit") || 5);
 
-  const account = await currentAccount();
+  const account = (await currentAccount()) as AccountClass;
 
   if (account instanceof NextResponse) {
     return account;

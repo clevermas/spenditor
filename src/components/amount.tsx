@@ -3,7 +3,7 @@ export function Amount({
   currency = "USD",
 }: {
   value: number;
-  currency: string;
+  currency?: string;
 }) {
   const amount = new Intl.NumberFormat("en-US", {
     style: "currency",

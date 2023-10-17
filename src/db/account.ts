@@ -7,6 +7,9 @@ import mongoose from "mongoose";
   },
 })
 class AccountClass {
+  id?: string;
+  _id?: string;
+
   @prop({ required: true })
   name: string;
 

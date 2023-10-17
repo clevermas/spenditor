@@ -6,7 +6,8 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-const Select = SelectPrimitive.Root;
+// FIXME: typing error: Property 'placeholder' does not exist on type 'IntrinsicAttributes & SelectProps
+const Select = SelectPrimitive.Root as any;
 
 const SelectGroup = SelectPrimitive.Group;
 

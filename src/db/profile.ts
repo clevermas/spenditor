@@ -7,6 +7,9 @@ import mongoose from "mongoose";
   },
 })
 class ProfileClass {
+  id?: string;
+  _id?: string;
+
   @prop({ required: true, unique: true })
   userId: string;
 

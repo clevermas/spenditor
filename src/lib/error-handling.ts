@@ -1,3 +1,4 @@
+import { MongooseError } from "mongoose";
 import { NextResponse } from "next/server";
 
 export function throwError([name, message], status = 400) {
@@ -29,7 +30,8 @@ export async function handleMongoDbQuery(
   let data;
   try {
     data = await cb();
-  } catch ({ name, message }) {
+  } catch (error) {
+    const { name, message } = error as MongooseError;
     return throwError([name, message], errorStatus);
   }
   if (!data) {

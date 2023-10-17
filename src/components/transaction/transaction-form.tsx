@@ -1,11 +1,16 @@
 "use client";
 
-import * as moment from "moment";
+import moment from "moment";
 import * as z from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "lucide-react";
-import { useForm } from "react-hook-form";
+import {
+  FieldValues,
+  SubmitHandler,
+  useForm,
+  UseFormReturn,
+} from "react-hook-form";
 
 import {
   Form,
@@ -63,7 +68,7 @@ export const formSchema = z
     tags: z.string().array(),
     comment: z.string().optional(),
   })
-  .superRefine(validateTransactionForm);
+  .superRefine(validateTransactionForm as (transaction: any, ctx: any) => void);
 
 export const useTransactionForm = () => {
   const defaultValues = {
@@ -80,7 +85,15 @@ export const useTransactionForm = () => {
   return { form };
 };
 
-export function TransactionForm({ form, onSubmit }) {
+type TransactionFormProps<TFormValues extends FieldValues> = {
+  form: UseFormReturn<TFormValues>;
+  onSubmit: SubmitHandler<TFormValues>;
+};
+
+export function TransactionForm({
+  form,
+  onSubmit,
+}: TransactionFormProps<z.infer<typeof formSchema>>) {
   const transactionType = form.getValues("type");
   const isExpense = form.getValues("type") === TransactionTypesEnum.Expense;
 

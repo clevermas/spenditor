@@ -16,13 +16,13 @@ import { useAppDispatch } from "@/redux/hooks";
 
 import { createList } from "@/lib/utils";
 
-import { Transaction } from "@/api/";
-import { DailyTransactionsList } from "@/lib/transactions/transaction";
+import { DailyTransactionsList } from "@/lib/transaction/transaction";
 import {
   transactionsApi,
   useGetTransactionsQuery,
 } from "@/redux/services/transactions-api";
 
+import { TransactionClass } from "@/db/transaction";
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
 import { DataTable } from "./data-table";
 
@@ -120,9 +120,11 @@ export interface IDailyTransactionsDividerRow {
   isDividerRow: boolean;
 }
 
-export type FlattenTransactionsRow = Transaction | IDailyTransactionsDividerRow;
+export type FlattenTransactionsRow =
+  | TransactionClass
+  | IDailyTransactionsDividerRow;
 
-export function flattenTransactions(
+function flattenTransactions(
   data: DailyTransactionsList[]
 ): FlattenTransactionsRow[] {
   return data.reduce(
@@ -131,6 +133,6 @@ export function flattenTransactions(
       { date, isDividerRow: true },
       ...transactions,
     ],
-    [] as FlattenTransactionsRow[]
-  );
+    [] as unknown[]
+  ) as FlattenTransactionsRow[];
 }

@@ -1,26 +1,25 @@
 "use client";
-import * as moment from "moment";
-
-import { memo } from "react";
+import moment from "moment";
 
 import {
+  Cell,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
-import { cn } from "@/lib/utils";
+import { memo } from "react";
 
 import { NoResults } from "@/components/no-results";
-
+import { cn } from "@/lib/utils";
 import { columns } from "./columns";
+import { FlattenTransactionsRow, IDailyTransactionsDividerRow } from "./page";
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData> {
   data: TData[];
 }
 
-export const DataTable = memo(
-  <TData, TValue>({ data }: DataTableProps<TData, TValue>) => {
+export const DataTable = memo<DataTableProps<FlattenTransactionsRow>>(
+  ({ data }: DataTableProps<FlattenTransactionsRow>) => {
     const table = useReactTable({
       data,
       columns,
@@ -30,37 +29,49 @@ export const DataTable = memo(
     return (
       <div>
         {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row, i) =>
-            row.original.isDividerRow ? (
-              <DailyTransactionsDividerRow
-                className={(i === 0 ? "" : "border-t ") + "border-b"}
-                key={row.id}
-                date={row.original.date}
-              ></DailyTransactionsDividerRow>
-            ) : (
-              <div
-                key={row.id}
-                className={
-                  "group grid gap-0 md:gap-2 items-center py-0 pt-2 md:pt-0 -mx-6 px-6 md:h-14 cursor-pointer hover:bg-accent/50 " +
-                  "grid-cols-[minmax(58%,_1fr)_30%_16px] md:grid-cols-[minmax(175px,_30%)_minmax(100px,_1fr)_100px_16px]"
-                }
-              >
-                {row.getVisibleCells().map((cell, i) => (
-                  <div
-                    key={cell.id}
-                    className={
-                      i === 1
-                        ? "order-last flex items-center h-8 col-span-3 -mx-6 px-6 bg-accent/70 dark:bg-accent/20 md:bg-transparent md:dark:bg-transparent group-hover:bg-transparent " +
-                          "md:order-none md:px-0 md:mx-0 md:col-span-1"
-                        : ""
-                    }
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </div>
-                ))}
-              </div>
-            )
-          )
+          table.getRowModel().rows.map((row, i) => {
+            const dividerRow = row.original as IDailyTransactionsDividerRow;
+            if (dividerRow.isDividerRow) {
+              return (
+                <DailyTransactionsDividerRow
+                  className={(i === 0 ? "" : "border-t ") + "border-b"}
+                  key={row.id}
+                  date={dividerRow.date}
+                ></DailyTransactionsDividerRow>
+              );
+            } else {
+              return (
+                <div
+                  key={row.id}
+                  className={
+                    "group grid gap-0 md:gap-2 items-center py-0 pt-2 md:pt-0 -mx-6 px-6 md:h-14 cursor-pointer hover:bg-accent/50 " +
+                    "grid-cols-[minmax(58%,_1fr)_30%_16px] md:grid-cols-[minmax(175px,_30%)_minmax(100px,_1fr)_100px_16px]"
+                  }
+                >
+                  {row
+                    .getVisibleCells()
+                    .map(
+                      (cell: Cell<FlattenTransactionsRow, any>, i: number) => (
+                        <div
+                          key={cell.id}
+                          className={
+                            i === 1
+                              ? "order-last flex items-center h-8 col-span-3 -mx-6 px-6 bg-accent/70 dark:bg-accent/20 md:bg-transparent md:dark:bg-transparent group-hover:bg-transparent " +
+                                "md:order-none md:px-0 md:mx-0 md:col-span-1"
+                              : ""
+                          }
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </div>
+                      )
+                    )}
+                </div>
+              );
+            }
+          })
         ) : (
           <NoResults></NoResults>
         )}

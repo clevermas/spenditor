@@ -1,12 +1,15 @@
-import * as moment from "moment";
+import moment from "moment";
 
+import mongoose from "mongoose";
+
+import { TransactionClass } from "@/db/transaction";
 import { ExpenseCategoriesList } from "@/lib/transaction/transaction-categories";
 import { createList, randomNItems } from "@/lib/utils";
 import { randomUUID } from "crypto";
 
 export interface DailyTransactionsList {
   date: string;
-  transactions: Transaction[];
+  transactions: TransactionClass[];
 }
 
 export enum TransactionTypesEnum {
@@ -15,17 +18,6 @@ export enum TransactionTypesEnum {
 }
 
 export type TransactionType = "income" | "expense";
-
-// TODO: refactor type usage to TransactionClass
-export type Transaction = {
-  id?: string;
-  type: TransactionType;
-  amount: string;
-  date: string;
-  category: string;
-  tags: string[];
-  comment: string;
-};
 
 export const createMockData = () =>
   createList(24, (i) => createDailyTransactions(i + 1));
@@ -41,16 +33,18 @@ export function createDailyTransactions(
   };
 }
 
-function createTransactions(date: string): Transaction[] {
+function createTransactions(date: string): TransactionClass[] {
   return createList(randomNItems(5), (i) => ({
     id: randomUUID(),
+    profileId: randomUUID(),
+    accountId: randomUUID(),
     type: "expense",
     amount: getRandomPrice(),
     date: moment(date)
       .subtract(15 * i, "minute")
-      .toISOString(),
+      .toDate(),
     category: getRandomExpenseCategory(),
-    tags: Math.random() > 0.5 ? ["test"] : [],
+    tags: (Math.random() > 0.5 ? ["test"] : []) as mongoose.Types.Array<string>,
     comment: "",
   }));
 }

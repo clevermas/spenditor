@@ -1,7 +1,7 @@
 import moment from "moment";
 import { NextResponse } from "next/server";
 
-import { Account } from "@/db/account";
+import { Account, AccountClass } from "@/db/account";
 import { Transaction, TransactionClass } from "@/db/transaction";
 import { currentAccount } from "@/lib/current-account";
 import { handleMongoDbQuery } from "@/lib/error-handling";
@@ -13,14 +13,14 @@ export async function PUT(
 ) {
   let transaction = (await req.json()) as TransactionClass;
 
-  const account = await currentAccount();
+  const account = (await currentAccount()) as AccountClass;
   if (account instanceof NextResponse) {
     return account;
   }
 
   const transactionId = params.id;
 
-  transaction = { ...transaction, date: moment(transaction?.date) };
+  transaction = { ...transaction, date: moment(transaction?.date).toDate() };
 
   const validation = validateTransaction(transaction);
   if (validation instanceof NextResponse) {
@@ -60,7 +60,7 @@ export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const account = await currentAccount();
+  const account = (await currentAccount()) as AccountClass;
   if (account instanceof NextResponse) {
     return account;
   }

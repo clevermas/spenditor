@@ -1,6 +1,7 @@
-import * as moment from "moment";
+import moment from "moment";
 
-import { Account } from "@/db/account";
+import { Account, AccountClass } from "@/db/account";
+import { ProfileClass } from "@/db/profile";
 import { Transaction, TransactionClass } from "@/db/transaction";
 import { currentAccount } from "@/lib/current-account";
 import { handleMongoDbQuery } from "@/lib/error-handling";
@@ -10,16 +11,19 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   let transaction = (await req.json()) as TransactionClass;
 
-  const { profile, account } = await currentAccount(true);
+  const { profile, account } = (await currentAccount(true)) as {
+    profile: ProfileClass;
+    account: AccountClass;
+  };
   if (account instanceof NextResponse) {
     return account;
   }
 
   transaction = {
     ...transaction,
-    date: moment(transaction?.date),
-    profileId: profile?.id,
-    accountId: account?.id,
+    date: moment(transaction?.date).toDate(),
+    profileId: profile?.id ?? "",
+    accountId: account?.id ?? "",
   };
 
   const validation = validateTransaction(transaction);

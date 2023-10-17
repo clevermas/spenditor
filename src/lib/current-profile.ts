@@ -8,6 +8,8 @@ import { throwError } from "./error-handling";
 export const currentProfile = async (): Promise<
   ProfileClass | NextResponse
 > => {
+  let profile: ProfileClass;
+
   const { userId } = auth();
 
   await connectDB();
@@ -16,14 +18,14 @@ export const currentProfile = async (): Promise<
     return throwError(["Profile not found", "Profile not found"], 404);
   }
 
-  let profile = await Profile.find({ userId });
+  const existingAccount = await Profile.find({ userId });
 
-  if (!profile?.length) {
+  if (!existingAccount?.length) {
     profile = await Profile.create({
       userId,
     });
   } else {
-    profile = profile[0];
+    profile = existingAccount[0];
   }
 
   return profile;

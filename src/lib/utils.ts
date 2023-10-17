@@ -5,11 +5,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function titleCase(word = "") {
+export function titleCase(word = ""): string {
   return (
-    typeof word == "string" &&
-    word.length &&
-    word[0].toUpperCase() + word.slice(1).toLowerCase()
+    (typeof word == "string" &&
+      word.length &&
+      word[0].toUpperCase() + word.slice(1).toLowerCase()) ||
+    word
   );
 }
 

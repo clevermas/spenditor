@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 
 import { Badge } from "@/components/ui/badge";
-
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,21 +16,18 @@ import { MoreVertical } from "lucide-react";
 import { Amount } from "@/components/amount";
 import { TransactionCategory } from "@/components/transaction/transaction-category";
 
-import { Transaction } from "@/api/";
-import { Button } from "@/components/ui/button";
-
+import { TransactionClass } from "@/db/transaction";
 import { open } from "@/redux/features/modal.slice";
 import { useAppDispatch } from "@/redux/hooks";
+import { FlattenTransactionsRow } from "./page";
 
-export const columns: ColumnDef<Transaction>[] = [
+export const columns: ColumnDef<FlattenTransactionsRow>[] = [
   {
     accessorKey: "category",
     header: "Category",
-    cell: ({
-      row: {
-        original: { type, category },
-      },
-    }) => {
+    cell: ({ row }) => {
+      const transaction = row.original as TransactionClass;
+      const { type, category } = transaction;
       return (
         <TransactionCategory
           category={category}
@@ -43,7 +40,7 @@ export const columns: ColumnDef<Transaction>[] = [
     accessorKey: "tags",
     header: "Tags",
     cell: ({ row }) => {
-      const tags = row.getValue("tags");
+      const tags = row.getValue("tags") as string[];
       return (
         <div className="space-x-2">
           {tags.map((tag) => (
@@ -67,13 +64,14 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "actions",
     header: "Actions",
-    cell: ({ row }) => (
-      <DataTableActions data={row.original}></DataTableActions>
-    ),
+    cell: ({ row }) => {
+      const transaction = row.original as TransactionClass;
+      return <DataTableActions data={transaction}></DataTableActions>;
+    },
   },
 ];
 
-function DataTableActions({ data }: { data: Transaction }) {
+function DataTableActions({ data }: { data: TransactionClass }) {
   const dispatch = useAppDispatch();
 
   function openEditTransactionModal() {

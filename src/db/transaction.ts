@@ -7,6 +7,9 @@ import mongoose from "mongoose";
   },
 })
 class TransactionClass {
+  id?: string;
+  _id?: string;
+
   @prop({ required: true })
   profileId: string;
 
