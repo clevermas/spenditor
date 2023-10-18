@@ -1,26 +1,24 @@
-import { getModelForClass, ModelOptions, prop } from "@typegoose/typegoose";
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 
-@ModelOptions({
-  schemaOptions: {
-    collection: "profiles",
-  },
-})
-class ProfileClass {
+export interface ProfileClass {
   id?: string;
   _id?: string;
 
-  @prop({ required: true, unique: true })
   userId: string;
-
-  @prop()
   name: string;
-
-  @prop()
   email: string;
 }
 
-const Profile =
-  mongoose.models["ProfileClass"] || getModelForClass(ProfileClass);
+export const ProfileSchema = new mongoose.Schema<ProfileClass>({
+  userId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  name: String,
+  email: String,
+});
 
-export { Profile, ProfileClass };
+export const Profile =
+  mongoose.models.Profile ||
+  (mongoose.model("Profile", ProfileSchema) as Model<ProfileClass>);

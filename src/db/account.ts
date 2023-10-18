@@ -1,29 +1,36 @@
-import { getModelForClass, ModelOptions, prop } from "@typegoose/typegoose";
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 
-@ModelOptions({
-  schemaOptions: {
-    collection: "accounts",
-  },
-})
-class AccountClass {
+export interface AccountClass {
   id?: string;
   _id?: string;
-
-  @prop({ required: true })
   name: string;
-
-  @prop({ required: true })
   profileId: string;
-
-  @prop({ required: true })
   currency: string;
-
-  @prop({ required: true })
   balance: string;
 }
 
-const Account =
-  mongoose.models["AccountClass"] || getModelForClass(AccountClass);
+export const AccountSchema = new mongoose.Schema<AccountClass>({
+  name: {
+    type: String,
+    required: true,
+  },
 
-export { Account, AccountClass };
+  profileId: {
+    type: String,
+    required: true,
+  },
+
+  currency: {
+    type: String,
+    required: true,
+  },
+
+  balance: {
+    type: String,
+    required: true,
+  },
+});
+
+export const Account =
+  mongoose.models.Account ||
+  (mongoose.model("Account", AccountSchema) as Model<AccountClass>);

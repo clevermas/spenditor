@@ -1,40 +1,53 @@
-import { getModelForClass, ModelOptions, prop } from "@typegoose/typegoose";
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 
-@ModelOptions({
-  schemaOptions: {
-    collection: "transactions",
-  },
-})
-class TransactionClass {
+export interface TransactionClass {
   id?: string;
   _id?: string;
 
-  @prop({ required: true })
   profileId: string;
-
-  @prop({ required: true })
   accountId: string;
-
-  @prop({ required: true })
   type: string;
-
-  @prop({ required: true })
   amount: string;
-
-  @prop({ required: true })
   date: Date;
-
-  @prop({ required: true })
   category: string;
-
-  @prop({ type: String, default: [] })
-  public tags!: mongoose.Types.Array<string>;
-
-  @prop()
+  tags: string[];
   comment: string;
 }
 
-const Transaction =
-  mongoose.models["TransactionClass"] || getModelForClass(TransactionClass);
-export { Transaction, TransactionClass };
+export const TransactionSchema = new mongoose.Schema<TransactionClass>({
+  profileId: {
+    type: String,
+    required: true,
+  },
+  accountId: {
+    type: String,
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+  },
+  amount: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: Date,
+    required: true,
+  },
+  category: {
+    type: String,
+    required: true,
+  },
+  tags: [
+    {
+      type: String,
+    },
+  ],
+
+  comment: String,
+});
+
+export const Transaction =
+  mongoose.models.Transaction ||
+  (mongoose.model("Transaction", TransactionSchema) as Model<TransactionClass>);

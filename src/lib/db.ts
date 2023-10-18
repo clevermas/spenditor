@@ -25,17 +25,12 @@ if (!cached) {
 }
 
 async function connectDB() {
-  if (cached.conn) {
-    console.log("🚀 Using cached connection");
-    return cached.conn;
-  }
-
-  if (!cached.promise) {
+  function connectPromise() {
     const opts = {
       bufferCommands: false,
     };
 
-    cached.promise = connect(MONGODB_URI!, opts)
+    return connect(MONGODB_URI!, opts)
       .then((mongoose) => {
         console.log("✅ New connection established");
         return mongoose;
@@ -46,14 +41,34 @@ async function connectDB() {
       });
   }
 
-  try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-    throw e;
-  }
+  if (process.env.NODE_ENV === "development") {
+    if (cached.conn) {
+      console.log("🚀 Using cached connection");
+      return cached.conn;
+    }
 
-  return cached.conn;
+    if (!cached.promise) {
+      cached.promise = connectPromise();
+
+      try {
+        cached.conn = await cached.promise;
+      } catch (e) {
+        cached.promise = null;
+        throw e;
+      }
+
+      return cached.conn;
+    }
+  } else {
+    let promise;
+
+    try {
+      promise = await connectPromise();
+    } catch (e) {
+      throw e;
+    }
+    return promise;
+  }
 }
 
 export default connectDB;
