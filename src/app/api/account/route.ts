@@ -48,11 +48,10 @@ export async function GET(req: Request) {
   );
 }
 
-function createDailyTransactionGroups(
+export function createDailyTransactionGroups(
   transactions: TransactionClass[]
 ): DailyTransactionsList[] {
   const groups = [] as DailyTransactionsList[];
-
   transactions.forEach((transaction) => {
     const date = moment(transaction.date).startOf("day").toISOString();
 

@@ -24,7 +24,7 @@ import {
 
 import { TransactionClass } from "@/db/transaction";
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
-import { DataTable } from "./data-table";
+import { DataTable } from "./(data-table)/data-table";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,13 +72,17 @@ export default function Home() {
             className="rounded h-6 w-6 p-0"
             disabled={isFetching}
             onClick={openAddTransactionModal}
+            aria-label="add-transaction-button"
           >
             <Plus className="h-4 w-4" />
           </Button>
         </div>
 
         {isFetching && !isSuccess ? (
-          <Skeleton className="h-6 w-[96px] self-end" />
+          <Skeleton
+            className="h-6 w-[96px] self-end"
+            data-testid="balance-skeleton-container"
+          />
         ) : (
           !error && (
             <Card className="self-end">
@@ -98,7 +102,10 @@ export default function Home() {
             {isSuccess ? (
               <DataTable data={transactions}></DataTable>
             ) : isFetching ? (
-              <div className="py-4 space-y-4">
+              <div
+                className="py-4 space-y-4"
+                data-testid="main-skeleton-container"
+              >
                 {createList(3, (i) => (
                   <Fragment key={i}>
                     <Skeleton className="h-8" />
@@ -136,7 +143,7 @@ export type FlattenTransactionsRow =
   | TransactionClass
   | IDailyTransactionsDividerRow;
 
-function flattenTransactions(
+export function flattenTransactions(
   data: DailyTransactionsList[]
 ): FlattenTransactionsRow[] {
   return data.reduce(

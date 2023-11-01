@@ -4,7 +4,7 @@ export const transactionsApi = createApi({
   reducerPath: "transactionsApi",
   refetchOnFocus: true,
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api/",
+    baseUrl: process.env.NEXT_PUBLIC_TRANSACTIONS_API_URL,
   }),
   tagTypes: ["Transactions"],
   endpoints: (builder) => ({

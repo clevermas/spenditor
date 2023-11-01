@@ -35,18 +35,28 @@ export function createDailyTransactions(
 
 function createTransactions(date: string): TransactionClass[] {
   return createList(randomNItems(5), (i) => ({
+    ...generateTransaction(date),
+    date: moment(date)
+      .subtract(15 * i, "minute")
+      .toDate(),
+  }));
+}
+
+export function generateTransaction(
+  date = new Date().toISOString()
+): TransactionClass {
+  return {
+    _id: randomUUID(),
     id: randomUUID(),
     profileId: randomUUID(),
     accountId: randomUUID(),
     type: "expense",
     amount: getRandomPrice(),
-    date: moment(date)
-      .subtract(15 * i, "minute")
-      .toDate(),
+    date: moment(date).toDate(),
     category: getRandomExpenseCategory(),
     tags: (Math.random() > 0.5 ? ["test"] : []) as mongoose.Types.Array<string>,
     comment: "",
-  }));
+  };
 }
 
 function getRandomPrice() {
