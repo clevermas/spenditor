@@ -66,10 +66,10 @@ export function EditTransactionModal() {
   }, [isModalOpen, resetForm, setFormInitialData]);
 
   useEffect(() => {
-    if (updateRequest.status === "fulfilled") {
+    if (updateRequest.status === "fulfilled" && isModalOpen) {
       handleClose();
     }
-  }, [updateRequest.status, handleClose]);
+  }, [updateRequest.status, handleClose, isModalOpen]);
 
   function onSubmit(
     updatedTransaction: Partial<TransactionClass | { tags: string[] }>
