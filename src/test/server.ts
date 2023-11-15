@@ -5,6 +5,9 @@ const handlers = [
   http.get("/api/account", () => {
     return HttpResponse.json({});
   }),
+  http.post("/api/transaction", () => {
+    return HttpResponse.json({});
+  }),
 ];
 
 const server = setupServer(...handlers);
