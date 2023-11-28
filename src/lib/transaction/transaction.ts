@@ -69,3 +69,43 @@ function getRandomExpenseCategory() {
   const category = categories[randomIndex - 1];
   return category;
 }
+
+export function createDailyTransactionGroups(
+  transactions: TransactionClass[]
+): DailyTransactionsList[] {
+  const groups = [] as DailyTransactionsList[];
+  transactions.forEach((transaction) => {
+    const date = moment(transaction.date).startOf("day").toISOString();
+
+    let i = groups.findIndex((g) => g.date === date);
+    if (i !== -1) {
+      groups[i].transactions.push(transaction);
+    } else {
+      groups.push({ date, transactions: [transaction] });
+    }
+  });
+
+  return groups;
+}
+
+export interface IDailyTransactionsDividerRow {
+  date: string;
+  isDividerRow: boolean;
+}
+
+export type FlattenTransactionsRow =
+  | TransactionClass
+  | IDailyTransactionsDividerRow;
+
+export function flattenTransactions(
+  data: DailyTransactionsList[]
+): FlattenTransactionsRow[] {
+  return data.reduce(
+    (accumulator, { date, transactions }) => [
+      ...accumulator,
+      { date, isDividerRow: true },
+      ...transactions,
+    ],
+    [] as unknown[]
+  ) as FlattenTransactionsRow[];
+}

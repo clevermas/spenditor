@@ -7,8 +7,8 @@ import { TransactionCategory } from "@/components/transaction/transaction-catego
 import { Badge } from "@/components/ui/badge";
 
 import { TransactionClass } from "@/db/transaction";
+import { FlattenTransactionsRow } from "@/lib/transaction/transaction";
 import { DataTableActions } from "./data-table-actions";
-import { FlattenTransactionsRow } from "./page";
 
 export const columns: ColumnDef<FlattenTransactionsRow>[] = [
   {

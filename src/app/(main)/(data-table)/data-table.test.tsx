@@ -1,5 +1,6 @@
 import { TransactionClass } from "@/db/transaction";
 import {
+  flattenTransactions,
   generateTransaction,
   TransactionTypesEnum,
 } from "@/lib/transaction/transaction";
@@ -9,7 +10,6 @@ import { renderWithProviders } from "@/test/test-utils";
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
 import moment from "moment";
-import { flattenTransactions } from "../page";
 import { DataTable } from "./data-table";
 
 describe("Home Data Table", () => {

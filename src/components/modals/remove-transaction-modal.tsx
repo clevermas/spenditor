@@ -14,7 +14,11 @@ import {
 
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
 
-import { close, ModalType } from "@/redux/features/modal.slice";
+import {
+  close,
+  ModalType,
+  RemoveTransactionModalData,
+} from "@/redux/features/modal.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { useRemoveTransactionMutation } from "@/redux/services/account-api";
 

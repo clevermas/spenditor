@@ -16,11 +16,10 @@ import { useAppDispatch } from "@/redux/hooks";
 
 import { createList } from "@/lib/utils";
 
-import { DailyTransactionsList } from "@/lib/transaction/transaction";
 import { accountApi, useAccountDataQuery } from "@/redux/services/account-api";
 
-import { TransactionClass } from "@/db/transaction";
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
+import { flattenTransactions } from "@/lib/transaction/transaction";
 import { DataTable } from "./(data-table)/data-table";
 
 export default function Home() {
@@ -129,26 +128,4 @@ export default function Home() {
       </div>
     </section>
   );
-}
-
-export interface IDailyTransactionsDividerRow {
-  date: string;
-  isDividerRow: boolean;
-}
-
-export type FlattenTransactionsRow =
-  | TransactionClass
-  | IDailyTransactionsDividerRow;
-
-export function flattenTransactions(
-  data: DailyTransactionsList[]
-): FlattenTransactionsRow[] {
-  return data.reduce(
-    (accumulator, { date, transactions }) => [
-      ...accumulator,
-      { date, isDividerRow: true },
-      ...transactions,
-    ],
-    [] as unknown[]
-  ) as FlattenTransactionsRow[];
 }
