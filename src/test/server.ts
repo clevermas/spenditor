@@ -5,7 +5,7 @@ const handlers = [
   http.get("/api/account", () => {
     return HttpResponse.json({});
   }),
-  http.post("/api/transaction", () => {
+  http.post("/api/account/transaction", () => {
     return HttpResponse.json({});
   }),
 ];

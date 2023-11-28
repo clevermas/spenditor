@@ -1,4 +1,4 @@
-import { transactionsApi } from "@/redux/services/transactions-api";
+import { accountApi } from "@/redux/services/account-api";
 import { setupStore } from "@/redux/store";
 import { server } from "./server";
 // make debug output for TestingLibrary Errors larger
@@ -16,7 +16,7 @@ beforeAll(() => {
 afterEach(() => {
   server.resetHandlers();
   // This is the solution to clear RTK Query cache after each test
-  store.dispatch(transactionsApi.util.resetApiState());
+  store.dispatch(accountApi.util.resetApiState());
 });
 
 // Clean up after the tests are finished.

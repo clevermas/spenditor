@@ -22,7 +22,7 @@ import {
 
 import { TransactionClass } from "@/db/transaction";
 import { close, ModalType } from "@/redux/features/modal.slice";
-import { useAddTransactionMutation } from "@/redux/services/transactions-api";
+import { useAddTransactionMutation } from "@/redux/services/account-api";
 
 export function AddTransactionModal() {
   const { form } = useTransactionForm();

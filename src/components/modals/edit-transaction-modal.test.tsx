@@ -29,8 +29,8 @@ const initalUpdateRequest = () => ({ status: "", reset: requestReset });
 let editTransaction = jest.fn();
 let updateRequest = initalUpdateRequest();
 
-jest.mock("../../redux/services/transactions-api", () => ({
-  ...jest.requireActual("../../redux/services/transactions-api"),
+jest.mock("../../redux/services/account-api", () => ({
+  ...jest.requireActual("../../redux/services/account-api"),
   useUpdateTransactionMutation: () => [editTransaction, updateRequest],
 }));
 

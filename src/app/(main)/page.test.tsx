@@ -26,12 +26,12 @@ const initialQueryMock = () => ({
   isFetching: true,
 });
 
-jest.mock("../../redux/services/transactions-api", () => {
-  const actual = jest.requireActual("../../redux/services/transactions-api");
+jest.mock("../../redux/services/account-api", () => {
+  const actual = jest.requireActual("../../redux/services/account-api");
   return {
     ...actual,
 
-    useGetTransactionsQuery: () => {
+    useAccountDataQuery: () => {
       return queryMock;
     },
   };

@@ -9,7 +9,7 @@ import { AccountClass } from "@/db/account";
 import { DailyTransactionsList } from "@/lib/transaction/transaction";
 import { NextResponse } from "next/server";
 
-export interface GetAccountDataResponseDTO {
+export interface AccountDataResponseDTO {
   name: string;
   currency: string;
   balance: string;

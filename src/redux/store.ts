@@ -1,11 +1,11 @@
 import type { PreloadedState } from "@reduxjs/toolkit";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import modalReducer from "./features/modal.slice";
-import { transactionsApi } from "./services/transactions-api";
+import { accountApi } from "./services/account-api";
 
 const rootReducer = combineReducers({
   modalReducer,
-  [transactionsApi.reducerPath]: transactionsApi.reducer,
+  [accountApi.reducerPath]: accountApi.reducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
@@ -13,7 +13,7 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
     reducer: rootReducer,
     devTools: process.env.NODE_ENV !== "production",
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat([transactionsApi.middleware]),
+      getDefaultMiddleware().concat([accountApi.middleware]),
     preloadedState,
   });
 };

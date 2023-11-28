@@ -17,10 +17,7 @@ import { useAppDispatch } from "@/redux/hooks";
 import { createList } from "@/lib/utils";
 
 import { DailyTransactionsList } from "@/lib/transaction/transaction";
-import {
-  transactionsApi,
-  useGetTransactionsQuery,
-} from "@/redux/services/transactions-api";
+import { accountApi, useAccountDataQuery } from "@/redux/services/account-api";
 
 import { TransactionClass } from "@/db/transaction";
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
@@ -29,7 +26,7 @@ import { DataTable } from "./(data-table)/data-table";
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const { data, error, isSuccess, isFetching } =
-    useGetTransactionsQuery(currentPage);
+    useAccountDataQuery(currentPage);
   const dispatch = useAppDispatch();
 
   const transactions = useMemo(
@@ -41,7 +38,7 @@ export default function Home() {
 
   useEffect(
     () => () => {
-      dispatch(transactionsApi.util.resetApiState());
+      dispatch(accountApi.util.resetApiState());
     },
     [dispatch]
   );

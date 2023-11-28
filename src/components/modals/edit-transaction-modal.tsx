@@ -13,7 +13,7 @@ import {
 
 import { close, ModalType } from "@/redux/features/modal.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useUpdateTransactionMutation } from "@/redux/services/transactions-api";
+import { useUpdateTransactionMutation } from "@/redux/services/account-api";
 
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
 
