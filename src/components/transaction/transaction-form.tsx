@@ -62,9 +62,11 @@ export const formSchema = z
     date: z.date({
       required_error: "Transaction date is required.",
     }),
-    amount: z.string({
-      required_error: "Amount is required.",
-    }),
+    amount: z
+      .string({
+        required_error: "Amount is required.",
+      })
+      .min(1, { message: "Amount is required." }),
     tags: z.string().array(),
     comment: z.string().optional(),
   })
