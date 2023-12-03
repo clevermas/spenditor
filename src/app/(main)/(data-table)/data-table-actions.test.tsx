@@ -1,8 +1,7 @@
 import { generateTransaction } from "@/lib/transaction/transaction";
 import { open } from "@/redux/features/modal.slice";
-import { renderWithProviders } from "@/test/test-utils";
 import "@testing-library/jest-dom";
-import { screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { DataTableActions } from "./data-table-actions";
@@ -23,7 +22,7 @@ describe("Home Data Table Actions", () => {
   });
 
   test("renders actions dropdown button", () => {
-    renderWithProviders(<DataTableActions />);
+    render(<DataTableActions />);
 
     const button = screen.getByRole("button", { name: "actions" });
 
@@ -32,7 +31,7 @@ describe("Home Data Table Actions", () => {
 
   test("opens actions menu", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<DataTableActions />);
+    render(<DataTableActions />);
 
     const button = screen.getByRole("button", { name: "actions" });
     await user.click(button);
@@ -48,7 +47,7 @@ describe("Home Data Table Actions", () => {
   test("opens edit transaction modal", async () => {
     const data = generateTransaction();
     const user = userEvent.setup();
-    renderWithProviders(<DataTableActions data={data} />);
+    render(<DataTableActions data={data} />);
 
     const button = screen.getByRole("button", { name: "actions" });
     await user.click(button);
@@ -63,7 +62,7 @@ describe("Home Data Table Actions", () => {
   test("opens remove transaction modal", async () => {
     const data = generateTransaction();
     const user = userEvent.setup();
-    renderWithProviders(<DataTableActions data={data} />);
+    render(<DataTableActions data={data} />);
 
     const button = screen.getByRole("button", { name: "actions" });
     await user.click(button);

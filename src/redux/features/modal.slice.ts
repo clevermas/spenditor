@@ -19,7 +19,7 @@ type ModalState = {
   isOpen: boolean;
 };
 
-const initialState = {
+export const initialState = {
   type: null,
   data: {},
   isOpen: false,
