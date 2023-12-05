@@ -353,7 +353,6 @@ describe("Transactions API", () => {
 
         test("sends request and updates mutation state on error response", async () => {
           mockErrorResponse();
-
           renderWithProviders(<MockComponent />);
 
           fireEvent.click(screen.getByTestId("button"));

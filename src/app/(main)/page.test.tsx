@@ -1,5 +1,5 @@
-import { generateTransaction } from "@/lib/transaction/transaction";
 import { open } from "@/redux/features/modal.slice";
+import { generateTransaction } from "@/test/mocks/account-api";
 import { renderWithProviders } from "@/test/test-utils";
 import "@testing-library/jest-dom";
 import { fireEvent, screen } from "@testing-library/react";
@@ -48,6 +48,10 @@ jest.mock("react-redux", () => {
 });
 
 describe("Home", () => {
+  function loadMoreButton() {
+    return screen.queryByText(/Load more/i);
+  }
+
   beforeEach(() => {
     queryMock = initialQueryMock();
 
@@ -57,9 +61,7 @@ describe("Home", () => {
   test("renders a heading", () => {
     renderWithProviders(<Home />);
 
-    const heading = screen.getByText("Recent transactions");
-
-    expect(heading).toBeInTheDocument();
+    expect(screen.getByText("Recent transactions")).toBeInTheDocument();
   });
 
   test("renders skeletons while fetching", () => {
@@ -68,10 +70,10 @@ describe("Home", () => {
 
     renderWithProviders(<Home />);
 
-    const balanceSkeleton = screen.getByTestId("balance-skeleton-container");
-    const mainSkeleton = screen.getByTestId("main-skeleton-container");
-    expect(mainSkeleton).toBeInTheDocument();
-    expect(balanceSkeleton).toBeInTheDocument();
+    expect(screen.getByTestId("main-skeleton-container")).toBeInTheDocument();
+    expect(
+      screen.getByTestId("balance-skeleton-container")
+    ).toBeInTheDocument();
   });
 
   test("not renders skeletons after data loaded", () => {
@@ -80,12 +82,10 @@ describe("Home", () => {
 
     renderWithProviders(<Home />);
 
-    const balanceSkeleton = screen.queryAllByTestId(
-      "balance-skeleton-container"
+    expect(screen.queryAllByTestId("main-skeleton-container")).toHaveLength(0);
+    expect(screen.queryAllByTestId("balance-skeleton-container")).toHaveLength(
+      0
     );
-    const mainSkeleton = screen.queryAllByTestId("main-skeleton-container");
-    expect(mainSkeleton).toHaveLength(0);
-    expect(balanceSkeleton).toHaveLength(0);
   });
 
   test("renders a table after data loaded", () => {
@@ -94,8 +94,7 @@ describe("Home", () => {
 
     renderWithProviders(<Home />);
 
-    const dataTable = screen.getByText("$66.00");
-    expect(dataTable).toBeInTheDocument();
+    expect(screen.getByText("$66.00")).toBeInTheDocument();
   });
 
   test("not renders a table after request error", () => {
@@ -104,8 +103,7 @@ describe("Home", () => {
 
     renderWithProviders(<Home />);
 
-    const dataTable = screen.queryAllByText("$66.00");
-    expect(dataTable).toHaveLength(0);
+    expect(screen.queryAllByText("$66.00")).toHaveLength(0);
   });
 
   test("renders no results after request error", () => {
@@ -115,8 +113,7 @@ describe("Home", () => {
 
     renderWithProviders(<Home />);
 
-    const dataTable = screen.getByText("No results.");
-    expect(dataTable).toBeInTheDocument();
+    expect(screen.getByText("No results.")).toBeInTheDocument();
   });
 
   test("renders load more button if there is more data", () => {
@@ -126,8 +123,7 @@ describe("Home", () => {
 
     renderWithProviders(<Home />);
 
-    const button = screen.getByText(/Load more/i).closest("button");
-    expect(button).toBeDisabled();
+    expect(loadMoreButton().closest("button")).toBeDisabled();
   });
 
   test("not renders button if there is no more data", () => {
@@ -136,8 +132,7 @@ describe("Home", () => {
 
     renderWithProviders(<Home />);
 
-    let button = screen.queryByText(/Load more/i);
-    expect(button).toBeNull();
+    expect(loadMoreButton()).toBeNull();
   });
 
   test("renders add transaction button disabled while fetching", () => {
@@ -145,10 +140,11 @@ describe("Home", () => {
 
     renderWithProviders(<Home />);
 
-    const button = screen.getByRole("button", {
-      name: "add-transaction-button",
-    });
-    expect(button).toBeDisabled();
+    expect(
+      screen.getByRole("button", {
+        name: "add-transaction-button",
+      })
+    ).toBeDisabled();
   });
 
   test("renders add transaction button not disabled after data is loaded", () => {
@@ -156,20 +152,22 @@ describe("Home", () => {
 
     renderWithProviders(<Home />);
 
-    const button = screen.getByRole("button", {
-      name: "add-transaction-button",
-    });
-    expect(button).not.toBeDisabled();
+    expect(
+      screen.getByRole("button", {
+        name: "add-transaction-button",
+      })
+    ).not.toBeDisabled();
   });
 
   test("opens add transaction modal on button click", () => {
     queryMock.isFetching = false;
 
     renderWithProviders(<Home />);
-    const button = screen.getByRole("button", {
-      name: "add-transaction-button",
-    });
-    fireEvent.click(button);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "add-transaction-button",
+      })
+    );
 
     expect(dispatch).toHaveBeenCalledWith(open({ type: "addTransaction" }));
   });
@@ -180,7 +178,6 @@ describe("Home", () => {
     queryMock.isSuccess = true;
 
     renderWithProviders(<Home />);
-    const button = screen.getByText(/Load more/i);
     queryMock.data.recentTransactions = {
       ...queryMock.data.recentTransactions,
       currentPage: 2,
@@ -192,12 +189,10 @@ describe("Home", () => {
         },
       ],
     };
-    fireEvent.click(button);
+    fireEvent.click(loadMoreButton());
 
-    const todayData = screen.getByText(/66/i);
-    const yesterdayData = screen.getByText(/77/i);
-    expect(todayData).toBeInTheDocument();
-    expect(yesterdayData).toBeInTheDocument();
+    expect(screen.getByText(/66/i)).toBeInTheDocument();
+    expect(screen.getByText(/77/i)).toBeInTheDocument();
   });
 
   test("displays load more button after click if there is more data", () => {
@@ -206,11 +201,10 @@ describe("Home", () => {
     queryMock.isSuccess = true;
 
     renderWithProviders(<Home />);
-    const button = screen.getByText(/Load more/i);
     queryMock.data.recentTransactions.currentPage = 2;
-    fireEvent.click(button);
+    fireEvent.click(loadMoreButton());
 
-    expect(button).toBeInTheDocument();
+    expect(loadMoreButton()).toBeInTheDocument();
   });
 
   test("not displays load more button after click if there is no more data", () => {
@@ -219,10 +213,9 @@ describe("Home", () => {
     queryMock.isSuccess = true;
 
     renderWithProviders(<Home />);
-    const button = screen.queryByText(/Load more/i);
     queryMock.data.recentTransactions.currentPage = 2;
-    fireEvent.click(button);
+    fireEvent.click(loadMoreButton());
 
-    expect(screen.queryByText(/Load more/i)).toBeNull();
+    expect(loadMoreButton()).toBeNull();
   });
 });

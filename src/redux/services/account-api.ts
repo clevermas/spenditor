@@ -4,7 +4,7 @@ export const accountApi = createApi({
   reducerPath: "accountApi",
   refetchOnFocus: true,
   baseQuery: fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_TRANSACTIONS_API_URL,
+    baseUrl: process.env.NEXT_PUBLIC_ACCOUNT_API_URL,
   }),
   tagTypes: ["AccountData"],
   endpoints: (builder) => ({

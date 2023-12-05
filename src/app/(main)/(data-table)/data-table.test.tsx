@@ -1,11 +1,11 @@
 import { TransactionClass } from "@/db/transaction";
 import {
   flattenTransactions,
-  generateTransaction,
   TransactionTypesEnum,
 } from "@/lib/transaction/transaction";
 import { ExpenseCategoriesList } from "@/lib/transaction/transaction-categories";
 import { createList, titleCase } from "@/lib/utils";
+import { generateTransaction } from "@/test/mocks/account-api";
 import { renderWithProviders } from "@/test/test-utils";
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
@@ -32,22 +32,17 @@ describe("Home Data Table", () => {
 
     renderWithProviders(<DataTable data={data} />);
 
-    const heading = screen.getByText("Today");
-    const category = screen.getByText(titleCase(expenseCategory));
-    const tags = [screen.getByText("TAG1"), screen.getByText("TAG2")];
-    const price = screen.getByText("-$66.00");
-    expect(heading).toBeInTheDocument();
-    expect(category).toBeInTheDocument();
-    expect(tags[0]).toBeInTheDocument();
-    expect(tags[1]).toBeInTheDocument();
-    expect(price).toBeInTheDocument();
+    expect(screen.getByText("Today")).toBeInTheDocument();
+    expect(screen.getByText(titleCase(expenseCategory))).toBeInTheDocument();
+    expect(screen.getByText("TAG1")).toBeInTheDocument();
+    expect(screen.getByText("TAG2")).toBeInTheDocument();
+    expect(screen.getByText("-$66.00")).toBeInTheDocument();
   });
 
   test("renders previous day transactions group with Yesterday title and corresponding transactions", () => {
     const incomeCategory = ExpenseCategoriesList[2];
     const expenseCategory = ExpenseCategoriesList[1];
     const expensesNum = 5;
-
     const data = flattenTransactions([
       {
         date: moment().subtract(1, "days").toISOString(),
@@ -69,19 +64,14 @@ describe("Home Data Table", () => {
 
     renderWithProviders(<DataTable data={data} />);
 
-    const heading = screen.getByText("Yesterday");
-    const category = screen.getByText(titleCase(incomeCategory));
-    const price = screen.getByText("$34.35");
-    const expenses = screen.queryAllByText("-$2.00");
-    expect(heading).toBeInTheDocument();
-    expect(category).toBeInTheDocument();
-    expect(price).toBeInTheDocument();
-    expect(expenses).toHaveLength(expensesNum);
+    expect(screen.getByText("Yesterday")).toBeInTheDocument();
+    expect(screen.getByText(titleCase(incomeCategory))).toBeInTheDocument();
+    expect(screen.getByText("$34.35")).toBeInTheDocument();
+    expect(screen.queryAllByText("-$2.00")).toHaveLength(expensesNum);
   });
 
   test("renders date in correct format", () => {
     const expenseCategory = ExpenseCategoriesList[2];
-
     const data = flattenTransactions([
       {
         date: moment("2001 09 11", "YYYY MM D").toISOString(),
@@ -97,7 +87,6 @@ describe("Home Data Table", () => {
 
     renderWithProviders(<DataTable data={data} />);
 
-    const heading = screen.getByText("Tue, 11 Sep");
-    expect(heading).toBeInTheDocument();
+    expect(screen.getByText("Tue, 11 Sep")).toBeInTheDocument();
   });
 });

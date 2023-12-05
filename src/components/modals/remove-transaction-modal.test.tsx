@@ -2,8 +2,8 @@ import { renderWithProviders } from "@/test/test-utils";
 import "@testing-library/jest-dom";
 import { fireEvent, screen } from "@testing-library/react";
 
-import { generateTransaction } from "@/lib/transaction/transaction";
 import { close } from "@/redux/features/modal.slice";
+import { generateTransaction } from "@/test/mocks/account-api";
 import { RemoveTransactionModal } from "./remove-transaction-modal";
 
 const requestReset = jest.fn();
@@ -37,6 +37,10 @@ describe("Remove Transaction Modal", () => {
     },
   };
 
+  function removeButton() {
+    return screen.getByText("Remove");
+  }
+
   beforeEach(() => {
     requestReset.mockClear();
     removeTransaction.mockClear();
@@ -45,9 +49,7 @@ describe("Remove Transaction Modal", () => {
   test("renders heading", () => {
     renderWithProviders(<RemoveTransactionModal />, state);
 
-    const heading = screen.getByText("Remove transaction");
-
-    expect(heading).toBeInTheDocument();
+    expect(screen.getByText("Remove transaction")).toBeInTheDocument();
   });
 
   test("renders warning text", () => {
@@ -63,25 +65,20 @@ describe("Remove Transaction Modal", () => {
   test("renders cancel button", () => {
     renderWithProviders(<RemoveTransactionModal />, state);
 
-    const button = screen.getByText("Cancel");
-
-    expect(button).toBeInTheDocument();
-    expect(button).not.toBeDisabled();
+    expect(screen.getByText("Cancel")).toBeInTheDocument();
+    expect(screen.getByText("Cancel")).not.toBeDisabled();
   });
 
   test("renders remove button", () => {
     renderWithProviders(<RemoveTransactionModal />, state);
 
-    const button = screen.getByText("Remove");
-
-    expect(button).toBeInTheDocument();
-    expect(button).not.toBeDisabled();
+    expect(removeButton()).toBeInTheDocument();
+    expect(removeButton()).not.toBeDisabled();
   });
 
   test("closes modal on removal", () => {
     renderWithProviders(<RemoveTransactionModal />, state);
-    const button = screen.getByText("Remove");
-    fireEvent.click(button);
+    fireEvent.click(removeButton());
     removeRequest.status = "fulfilled";
     renderWithProviders(<RemoveTransactionModal />, state);
 

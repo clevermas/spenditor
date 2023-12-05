@@ -52,6 +52,10 @@ describe("Add Transaction Modal", () => {
     },
   };
 
+  function saveButton() {
+    return screen.getByText("Save");
+  }
+
   beforeEach(() => {
     handleSubmit.mockClear();
     reset.mockClear();
@@ -62,25 +66,20 @@ describe("Add Transaction Modal", () => {
   test("renders heading", () => {
     renderWithProviders(<AddTransactionModal />, state);
 
-    const heading = screen.getByText("Add transaction");
-
-    expect(heading).toBeInTheDocument();
+    expect(screen.getByText("Add transaction")).toBeInTheDocument();
   });
 
   test("renders save button", () => {
     renderWithProviders(<AddTransactionModal />, state);
 
-    const button = screen.getByText("Save");
-
-    expect(button).toBeInTheDocument();
-    expect(button).not.toBeDisabled();
+    expect(saveButton()).toBeInTheDocument();
+    expect(saveButton()).not.toBeDisabled();
   });
 
   test("submits form on save button click", () => {
     renderWithProviders(<AddTransactionModal />, state);
 
-    const button = screen.getByText("Save");
-    fireEvent.click(button);
+    fireEvent.click(saveButton());
 
     expect(handleSubmit).toHaveBeenCalled();
   });
@@ -89,8 +88,7 @@ describe("Add Transaction Modal", () => {
     handleSubmit.mockImplementation((cb) => () => cb());
 
     renderWithProviders(<AddTransactionModal />, state);
-    const button = screen.getByText("Save");
-    fireEvent.click(button);
+    fireEvent.click(saveButton());
     updateRequest.status = "fulfilled";
     renderWithProviders(<AddTransactionModal />, state);
 

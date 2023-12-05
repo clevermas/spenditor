@@ -2,8 +2,8 @@ import { renderWithProviders } from "@/test/test-utils";
 import "@testing-library/jest-dom";
 import { fireEvent, screen } from "@testing-library/react";
 
-import { generateTransaction } from "@/lib/transaction/transaction";
 import { close } from "@/redux/features/modal.slice";
+import { generateTransaction } from "@/test/mocks/account-api";
 import { EditTransactionModal } from "./edit-transaction-modal";
 
 const handleSubmit = jest.fn();
@@ -55,6 +55,10 @@ describe("Edit Transaction Modal", () => {
     },
   };
 
+  function saveButton() {
+    return screen.getByText("Save");
+  }
+
   beforeEach(() => {
     handleSubmit.mockClear();
     reset.mockClear();
@@ -65,25 +69,20 @@ describe("Edit Transaction Modal", () => {
   test("renders heading", () => {
     renderWithProviders(<EditTransactionModal />, state);
 
-    const heading = screen.getByText("Edit transaction");
-
-    expect(heading).toBeInTheDocument();
+    expect(screen.getByText("Edit transaction")).toBeInTheDocument();
   });
 
   test("renders save button", () => {
     renderWithProviders(<EditTransactionModal />, state);
 
-    const button = screen.getByText("Save");
-
-    expect(button).toBeInTheDocument();
-    expect(button).not.toBeDisabled();
+    expect(saveButton()).toBeInTheDocument();
+    expect(saveButton()).not.toBeDisabled();
   });
 
   test("submits form on save button click", () => {
     renderWithProviders(<EditTransactionModal />, state);
 
-    const button = screen.getByText("Save");
-    fireEvent.click(button);
+    fireEvent.click(saveButton());
 
     expect(handleSubmit).toHaveBeenCalled();
   });
@@ -93,7 +92,7 @@ describe("Edit Transaction Modal", () => {
 
     renderWithProviders(<EditTransactionModal />, state);
     const button = screen.getByText("Save");
-    fireEvent.click(button);
+    fireEvent.click(saveButton());
     updateRequest.status = "fulfilled";
     renderWithProviders(<EditTransactionModal />, state);
 

@@ -1,5 +1,5 @@
-import { generateTransaction } from "@/lib/transaction/transaction";
 import { open } from "@/redux/features/modal.slice";
+import { generateTransaction } from "@/test/mocks/account-api";
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -17,6 +17,10 @@ jest.mock("react-redux", () => {
 });
 
 describe("Home Data Table Actions", () => {
+  function actionsButton() {
+    return screen.getByRole("button", { name: "actions" });
+  }
+
   beforeEach(() => {
     dispatch.mockClear();
   });
@@ -24,24 +28,18 @@ describe("Home Data Table Actions", () => {
   test("renders actions dropdown button", () => {
     render(<DataTableActions />);
 
-    const button = screen.getByRole("button", { name: "actions" });
-
-    expect(button).toBeInTheDocument();
+    expect(actionsButton()).toBeInTheDocument();
   });
 
   test("opens actions menu", async () => {
     const user = userEvent.setup();
     render(<DataTableActions />);
 
-    const button = screen.getByRole("button", { name: "actions" });
-    await user.click(button);
+    await user.click(actionsButton());
 
-    const menu = screen.getByRole("menu");
-    const edit = screen.getByText("Edit");
-    const remove = screen.getByText("Remove");
-    expect(menu).toBeInTheDocument();
-    expect(edit).toBeInTheDocument();
-    expect(remove).toBeInTheDocument();
+    expect(screen.getByRole("menu")).toBeInTheDocument();
+    expect(screen.getByText("Edit")).toBeInTheDocument();
+    expect(screen.getByText("Remove")).toBeInTheDocument();
   });
 
   test("opens edit transaction modal", async () => {
@@ -49,10 +47,8 @@ describe("Home Data Table Actions", () => {
     const user = userEvent.setup();
     render(<DataTableActions data={data} />);
 
-    const button = screen.getByRole("button", { name: "actions" });
-    await user.click(button);
-    const edit = screen.getByText("Edit");
-    await user.click(edit);
+    await user.click(actionsButton());
+    await user.click(screen.getByText("Edit"));
 
     expect(dispatch).toHaveBeenCalledWith(
       open({ type: "editTransaction", data })
@@ -64,10 +60,8 @@ describe("Home Data Table Actions", () => {
     const user = userEvent.setup();
     render(<DataTableActions data={data} />);
 
-    const button = screen.getByRole("button", { name: "actions" });
-    await user.click(button);
-    const remove = screen.getByText("Remove");
-    await user.click(remove);
+    await user.click(actionsButton());
+    await user.click(screen.getByText("Remove"));
 
     expect(dispatch).toHaveBeenCalledWith(
       open({ type: "removeTransaction", data: { transactionId: data._id } })
