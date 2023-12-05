@@ -13,7 +13,7 @@ import {
 
 import { close, ModalType } from "@/redux/features/modal.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useUpdateTransactionMutation } from "@/redux/services/transactions-api";
+import { useUpdateTransactionMutation } from "@/redux/services/account-api";
 
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
 
@@ -66,10 +66,10 @@ export function EditTransactionModal() {
   }, [isModalOpen, resetForm, setFormInitialData]);
 
   useEffect(() => {
-    if (updateRequest.status === "fulfilled") {
+    if (updateRequest.status === "fulfilled" && isModalOpen) {
       handleClose();
     }
-  }, [updateRequest.status, handleClose]);
+  }, [updateRequest.status, handleClose, isModalOpen]);
 
   function onSubmit(
     updatedTransaction: Partial<TransactionClass | { tags: string[] }>

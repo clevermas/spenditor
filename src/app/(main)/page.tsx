@@ -16,20 +16,16 @@ import { useAppDispatch } from "@/redux/hooks";
 
 import { createList } from "@/lib/utils";
 
-import { DailyTransactionsList } from "@/lib/transaction/transaction";
-import {
-  transactionsApi,
-  useGetTransactionsQuery,
-} from "@/redux/services/transactions-api";
+import { accountApi, useAccountDataQuery } from "@/redux/services/account-api";
 
-import { TransactionClass } from "@/db/transaction";
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
-import { DataTable } from "./data-table";
+import { flattenTransactions } from "@/lib/transaction/transaction";
+import { DataTable } from "./(data-table)/data-table";
 
 export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const { data, error, isSuccess, isFetching } =
-    useGetTransactionsQuery(currentPage);
+    useAccountDataQuery(currentPage);
   const dispatch = useAppDispatch();
 
   const transactions = useMemo(
@@ -41,7 +37,7 @@ export default function Home() {
 
   useEffect(
     () => () => {
-      dispatch(transactionsApi.util.resetApiState());
+      dispatch(accountApi.util.resetApiState());
     },
     [dispatch]
   );
@@ -72,13 +68,17 @@ export default function Home() {
             className="rounded h-6 w-6 p-0"
             disabled={isFetching}
             onClick={openAddTransactionModal}
+            aria-label="add-transaction-button"
           >
             <Plus className="h-4 w-4" />
           </Button>
         </div>
 
         {isFetching && !isSuccess ? (
-          <Skeleton className="h-6 w-[96px] self-end" />
+          <Skeleton
+            className="h-6 w-[96px] self-end"
+            data-testid="balance-skeleton-container"
+          />
         ) : (
           !error && (
             <Card className="self-end">
@@ -98,7 +98,10 @@ export default function Home() {
             {isSuccess ? (
               <DataTable data={transactions}></DataTable>
             ) : isFetching ? (
-              <div className="py-4 space-y-4">
+              <div
+                className="py-4 space-y-4"
+                data-testid="main-skeleton-container"
+              >
                 {createList(3, (i) => (
                   <Fragment key={i}>
                     <Skeleton className="h-8" />
@@ -125,26 +128,4 @@ export default function Home() {
       </div>
     </section>
   );
-}
-
-export interface IDailyTransactionsDividerRow {
-  date: string;
-  isDividerRow: boolean;
-}
-
-export type FlattenTransactionsRow =
-  | TransactionClass
-  | IDailyTransactionsDividerRow;
-
-function flattenTransactions(
-  data: DailyTransactionsList[]
-): FlattenTransactionsRow[] {
-  return data.reduce(
-    (accumulator, { date, transactions }) => [
-      ...accumulator,
-      { date, isDividerRow: true },
-      ...transactions,
-    ],
-    [] as unknown[]
-  ) as FlattenTransactionsRow[];
 }

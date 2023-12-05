@@ -2,24 +2,13 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { MoreVertical } from "lucide-react";
-
 import { Amount } from "@/components/amount";
 import { TransactionCategory } from "@/components/transaction/transaction-category";
+import { Badge } from "@/components/ui/badge";
 
 import { TransactionClass } from "@/db/transaction";
-import { open } from "@/redux/features/modal.slice";
-import { useAppDispatch } from "@/redux/hooks";
-import { FlattenTransactionsRow } from "./page";
+import { FlattenTransactionsRow } from "@/lib/transaction/transaction";
+import { DataTableActions } from "./data-table-actions";
 
 export const columns: ColumnDef<FlattenTransactionsRow>[] = [
   {
@@ -70,37 +59,3 @@ export const columns: ColumnDef<FlattenTransactionsRow>[] = [
     },
   },
 ];
-
-function DataTableActions({ data }: { data: TransactionClass }) {
-  const dispatch = useAppDispatch();
-
-  function openEditTransactionModal() {
-    dispatch(open({ type: "editTransaction", data }));
-  }
-
-  function openRemoveTransactionModal() {
-    dispatch(
-      open({ type: "removeTransaction", data: { transactionId: data?._id } })
-    );
-  }
-
-  return (
-    <div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-7 h-7 p-1 hover:bg-slate-200">
-            <MoreVertical />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onClick={openEditTransactionModal}>
-            Edit
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={openRemoveTransactionModal}>
-            Remove
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-}

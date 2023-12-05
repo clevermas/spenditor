@@ -1,19 +1,23 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/dist/query";
+import type { PreloadedState } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import modalReducer from "./features/modal.slice";
-import { transactionsApi } from "./services/transactions-api";
+import { accountApi } from "./services/account-api";
 
-export const store = configureStore({
-  reducer: {
-    modalReducer,
-    [transactionsApi.reducerPath]: transactionsApi.reducer,
-  },
-  devTools: process.env.NODE_ENV !== "production",
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({}).concat([transactionsApi.middleware]),
+const rootReducer = combineReducers({
+  modalReducer,
+  [accountApi.reducerPath]: accountApi.reducer,
 });
 
-setupListeners(store.dispatch);
+export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
+  return configureStore({
+    reducer: rootReducer,
+    devTools: process.env.NODE_ENV !== "production",
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat([accountApi.middleware]),
+    preloadedState,
+  });
+};
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppStore = ReturnType<typeof setupStore>;
+export type AppDispatch = AppStore["dispatch"];

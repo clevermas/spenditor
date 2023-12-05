@@ -1,14 +1,14 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const transactionsApi = createApi({
-  reducerPath: "transactionsApi",
+export const accountApi = createApi({
+  reducerPath: "accountApi",
   refetchOnFocus: true,
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api/",
+    baseUrl: process.env.NEXT_PUBLIC_ACCOUNT_API_URL,
   }),
-  tagTypes: ["Transactions"],
+  tagTypes: ["AccountData"],
   endpoints: (builder) => ({
-    getTransactions: builder.query({
+    accountData: builder.query({
       queryFn: async (page, store, _, baseQuery) => {
         let query, limit;
 
@@ -16,19 +16,18 @@ export const transactionsApi = createApi({
           // see: https://github.com/reduxjs/redux-toolkit/issues/1685
           const state = store.getState() as any;
           const isRevalidatingAllTransactions = !!Object.keys(
-            state.transactionsApi.mutations
+            state.accountApi.mutations
           )?.length;
 
           if (isRevalidatingAllTransactions) {
             const data =
-              state.transactionsApi.queries.getTransactions.data
-                ?.recentTransactions;
+              state.accountApi.queries.accountData.data?.recentTransactions;
             page = 1;
             limit = data.currentPage * data.limit;
           }
 
           query = await baseQuery({
-            url: `/account/?${new URLSearchParams({
+            url: `?${new URLSearchParams({
               page,
               ...(limit ? { limit } : {}),
             }).toString()}`,
@@ -38,7 +37,7 @@ export const transactionsApi = createApi({
         }
         return { data: query?.data, error: query?.error };
       },
-      providesTags: () => ["Transactions"],
+      providesTags: () => ["AccountData"],
       merge: (cache, newTransactionsData) => {
         const cacheData = cache.recentTransactions;
         const newData = newTransactionsData?.recentTransactions;
@@ -74,7 +73,7 @@ export const transactionsApi = createApi({
         method: "POST",
         body: transaction,
       }),
-      invalidatesTags: ["Transactions"],
+      invalidatesTags: ["AccountData"],
     }),
 
     updateTransaction: builder.mutation({
@@ -83,7 +82,7 @@ export const transactionsApi = createApi({
         method: "PUT",
         body: transaction,
       }),
-      invalidatesTags: ["Transactions"],
+      invalidatesTags: ["AccountData"],
     }),
 
     removeTransaction: builder.mutation({
@@ -91,14 +90,14 @@ export const transactionsApi = createApi({
         url: `transaction/${transactionId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Transactions"],
+      invalidatesTags: ["AccountData"],
     }),
   }),
 });
 
 export const {
-  useGetTransactionsQuery,
+  useAccountDataQuery,
   useAddTransactionMutation,
   useUpdateTransactionMutation,
   useRemoveTransactionMutation,
-} = transactionsApi;
+} = accountApi;

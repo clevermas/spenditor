@@ -10,9 +10,12 @@ import {
 import { memo } from "react";
 
 import { NoResults } from "@/components/no-results";
+import {
+  FlattenTransactionsRow,
+  IDailyTransactionsDividerRow,
+} from "@/lib/transaction/transaction";
 import { cn } from "@/lib/utils";
 import { columns } from "./columns";
-import { FlattenTransactionsRow, IDailyTransactionsDividerRow } from "./page";
 
 interface DataTableProps<TData> {
   data: TData[];

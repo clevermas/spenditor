@@ -22,7 +22,7 @@ import {
 
 import { TransactionClass } from "@/db/transaction";
 import { close, ModalType } from "@/redux/features/modal.slice";
-import { useAddTransactionMutation } from "@/redux/services/transactions-api";
+import { useAddTransactionMutation } from "@/redux/services/account-api";
 
 export function AddTransactionModal() {
   const { form } = useTransactionForm();
@@ -52,10 +52,10 @@ export function AddTransactionModal() {
   }, [isModalOpen, resetForm]);
 
   useEffect(() => {
-    if (updateRequest.status === "fulfilled") {
+    if (updateRequest.status === "fulfilled" && isModalOpen) {
       handleClose();
     }
-  }, [updateRequest.status, handleClose]);
+  }, [updateRequest.status, handleClose, isModalOpen]);
 
   function onSubmit(
     transaction: Partial<TransactionClass | { tags: string[] }>

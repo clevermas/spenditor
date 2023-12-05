@@ -20,7 +20,7 @@ import {
   RemoveTransactionModalData,
 } from "@/redux/features/modal.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useRemoveTransactionMutation } from "@/redux/services/transactions-api";
+import { useRemoveTransactionMutation } from "@/redux/services/account-api";
 
 export function RemoveTransactionModal() {
   const { type, isOpen, data } = useAppSelector((state) => state.modalReducer);
