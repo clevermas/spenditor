@@ -93,16 +93,16 @@ export default function TransactionsPage() {
             ) : (
               error && <NoResults></NoResults>
             )}
-
-            {currentPage !== totalPages && (
-              <div className="flex justify-center py-2">
-                <Button onClick={loadMore} disabled={isFetching}>
-                  Load More
-                </Button>
-              </div>
-            )}
           </CardContent>
         </Card>
+
+        {currentPage !== totalPages && (
+          <div className="w-full flex justify-center py-2">
+            <Button variant="ghost" onClick={loadMore} disabled={isFetching}>
+              Load More
+            </Button>
+          </div>
+        )}
       </div>
     </section>
   );

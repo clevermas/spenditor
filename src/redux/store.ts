@@ -1,10 +1,12 @@
 import type { PreloadedState } from "@reduxjs/toolkit";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import modalReducer from "./features/modal.slice";
+import sidebarReducer from "./features/sidebar.slice";
 import { accountApi } from "./services/account-api";
 
 const rootReducer = combineReducers({
   modalReducer,
+  sidebarReducer,
   [accountApi.reducerPath]: accountApi.reducer,
 });
 

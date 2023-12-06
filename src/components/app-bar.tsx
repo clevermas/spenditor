@@ -1,13 +1,29 @@
+"use client";
+
 import ModeToggle from "@/components/mode-toggle";
+import { toggle } from "@/redux/features/sidebar.slice";
+import { useAppDispatch } from "@/redux/hooks";
 import { UserButton } from "@clerk/nextjs";
+import { Menu } from "lucide-react";
 import Link from "next/link";
+import { Button } from "./ui/button";
 
 function AppBar() {
+  const dispatch = useAppDispatch();
+
   return (
-    <header className="text-lg font-semibold border-neutral-200 dark:border-neutral-800 border-b-2">
+    <header className="fixed w-full text-lg font-semibold bg-background border-neutral-200 dark:border-neutral-800 border-b-2">
       <div className="px-4 flex justify-between items-center h-12">
         <div className="flex items-center mt-[3px]">
-          <Link href="/" className="flex">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="inline-flex lg:hidden"
+            onClick={() => dispatch(toggle())}
+          >
+            <Menu />
+          </Button>
+          <Link href="/" className="hidden lg:flex">
             {" "}
             <svg
               xmlns="http://www.w3.org/2000/svg"

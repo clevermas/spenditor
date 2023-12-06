@@ -56,7 +56,12 @@ export default function Home() {
             <CardContent className="p-0">
               {statisticsLoaded ? (
                 <>
-                  <h2 className="text-lg">Expenses (Current month)</h2>
+                  <h2 className="text-lg">
+                    Expenses{" "}
+                    <span className="text-sm sm:text-base lg:text-lg">
+                      (Current month)
+                    </span>
+                  </h2>
                   <Amount
                     className="text-3xl text-left"
                     value={totalExpenses}
@@ -99,7 +104,7 @@ export default function Home() {
           <Link
             href="/transactions"
             aria-label="manage"
-            className={buttonVariants("default")}
+            className={buttonVariants({ variant: "ghost" })}
           >
             Manage
           </Link>
