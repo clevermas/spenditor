@@ -15,20 +15,20 @@ import {
   IDailyTransactionsDividerRow,
 } from "@/lib/transaction/transaction";
 import { cn } from "@/lib/utils";
-import { columns } from "./columns";
+import { columns, columnsWithoutActions } from "./columns";
 
 interface DataTableProps<TData> {
   data: TData[];
+  readonly?: boolean;
 }
 
 export const DataTable = memo<DataTableProps<FlattenTransactionsRow>>(
-  ({ data }: DataTableProps<FlattenTransactionsRow>) => {
+  ({ data, readonly = false }: DataTableProps<FlattenTransactionsRow>) => {
     const table = useReactTable({
       data,
-      columns,
+      columns: readonly ? columnsWithoutActions : columns,
       getCoreRowModel: getCoreRowModel(),
     });
-
     return (
       <div>
         {table.getRowModel().rows?.length ? (
@@ -47,8 +47,11 @@ export const DataTable = memo<DataTableProps<FlattenTransactionsRow>>(
                 <div
                   key={row.id}
                   className={
-                    "group grid gap-0 md:gap-2 items-center py-0 pt-2 md:pt-0 -mx-6 px-6 md:h-14 cursor-pointer hover:bg-accent/50 " +
-                    "grid-cols-[minmax(58%,_1fr)_30%_16px] md:grid-cols-[minmax(175px,_30%)_minmax(100px,_1fr)_100px_16px]"
+                    "group grid gap-0 md:gap-2 items-center py-0 pt-2 md:pt-0 -mx-6 px-6 md:h-14 " +
+                    (readonly
+                      ? "grid-cols-[minmax(58%,_1fr)_30%] md:grid-cols-[minmax(175px,_30%)_minmax(100px,_1fr)_100px]"
+                      : "grid-cols-[minmax(58%,_1fr)_30%_16px] md:grid-cols-[minmax(175px,_30%)_minmax(100px,_1fr)_100px_16px]" +
+                        " cursor-pointer hover:bg-accent/50")
                   }
                 >
                   {row
@@ -59,8 +62,9 @@ export const DataTable = memo<DataTableProps<FlattenTransactionsRow>>(
                           key={cell.id}
                           className={
                             i === 1
-                              ? "order-last flex items-center h-8 col-span-3 -mx-6 px-6 bg-accent/70 dark:bg-accent/20 md:bg-transparent md:dark:bg-transparent group-hover:bg-transparent " +
-                                "md:order-none md:px-0 md:mx-0 md:col-span-1"
+                              ? "order-last flex items-center h-8 col-span-3 -mx-6 px-6 bg-accent/70 dark:bg-accent/20 md:bg-transparent md:dark:bg-transparent " +
+                                "md:order-none md:px-0 md:mx-0 md:col-span-1" +
+                                (readonly ? "" : " group-hover:bg-transparent")
                               : ""
                           }
                         >

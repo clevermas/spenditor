@@ -59,3 +59,7 @@ export const columns: ColumnDef<FlattenTransactionsRow>[] = [
     },
   },
 ];
+
+export const columnsWithoutActions = columns.filter(
+  (column) => column.accessorKey !== "actions"
+);

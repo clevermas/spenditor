@@ -2,14 +2,9 @@
 
 import { Fragment, useEffect, useMemo, useState } from "react";
 
-import { Plus } from "lucide-react";
-
+import { NoResults } from "@/components/no-results";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-
-import { Amount } from "@/components/amount";
-import { NoResults } from "@/components/no-results";
 
 import { open } from "@/redux/features/modal.slice";
 import { useAppDispatch } from "@/redux/hooks";
@@ -19,10 +14,13 @@ import { createList } from "@/lib/utils";
 import { accountApi, useAccountDataQuery } from "@/redux/services/account-api";
 
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
-import { flattenTransactions } from "@/lib/transaction/transaction";
-import { DataTable } from "./(data-table)/data-table";
 
-export default function Home() {
+import { flattenTransactions } from "@/lib/transaction/transaction";
+
+import { DataTable } from "@/app/(dashboard)/components/transaction/data-table";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function TransactionsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const { data, error, isSuccess, isFetching } =
     useAccountDataQuery(currentPage);
@@ -61,37 +59,17 @@ export default function Home() {
   return (
     <section className="flex justify-center">
       <div className="flex flex-wrap flex-col sm:flex-row gap-2 w-full lg:w-[768px] px-4 lg:px-8 py-2">
-        <div className="grow flex gap-2">
-          <h1 className="text-lg">Recent transactions</h1>
+        <div className="w-full flex justify-between gap-2">
+          <h1 className="text-lg leading-9">Recent transactions</h1>
 
           <Button
-            className="rounded h-6 w-6 p-0"
             disabled={isFetching}
             onClick={openAddTransactionModal}
             aria-label="add-transaction-button"
           >
-            <Plus className="h-4 w-4" />
+            Add
           </Button>
         </div>
-
-        {isFetching && !isSuccess ? (
-          <Skeleton
-            className="h-6 w-[96px] self-end"
-            data-testid="balance-skeleton-container"
-          />
-        ) : (
-          !error && (
-            <Card className="self-end">
-              <CardContent className="flex gap-2 items-center justify-end py-1 px-3">
-                <span className="leading-2">Balance:</span>{" "}
-                <Amount
-                  value={+data?.balance}
-                  currency={data?.currency}
-                ></Amount>
-              </CardContent>
-            </Card>
-          )
-        )}
 
         <Card className="w-full">
           <CardContent className="pb-0">
