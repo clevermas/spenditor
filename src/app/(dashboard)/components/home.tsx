@@ -1,22 +1,25 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useMemo } from "react";
+
+import { createList } from "@/lib/utils";
+import { useAppDispatch } from "@/redux/hooks";
 import Link from "next/link";
 
 import { Amount } from "@/components/amount";
 import { NoResults } from "@/components/no-results";
 import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
 import { flattenTransactions } from "@/lib/transaction/transaction";
-import { createList } from "@/lib/utils";
-import { useAppDispatch } from "@/redux/hooks";
 import {
   accountApi,
   useAccountDataQuery,
   useStatisticsQuery,
 } from "@/redux/services/account-api";
-import { Fragment, useEffect, useMemo } from "react";
+import ExpensesPieChart from "./charts/expenses-pie-chart";
+import WeeklyExpensesChart from "./charts/weekly-expenses-chart";
 import { DataTable } from "./transaction/data-table";
 
 export default function Home() {
@@ -27,13 +30,16 @@ export default function Home() {
     isFetching,
   } = useAccountDataQuery(1);
   const { data: statistics, isSuccess: statisticsLoaded } =
-    useStatisticsQuery();
+    useStatisticsQuery(1);
+
   const dispatch = useAppDispatch();
 
-  const totalExpenses = statistics?.totalExpenses;
+  const totalExpenses = statistics?.currentMonth?.total;
+  const expenseCategories = statistics?.currentMonth?.expenseCategories;
+  const weeklyExpenses = statistics?.currentMonth?.weeklyExpenses;
 
   const transactions = useMemo(
-    () => flattenTransactions(data?.recentTransactions?.data || []),
+    () => flattenTransactions(data?.recentTransactions?.data.slice(0, 3) || []),
     [data?.recentTransactions]
   );
 
@@ -48,10 +54,10 @@ export default function Home() {
 
   return (
     <section className="flex justify-center">
-      <div className="flex flex-wrap flex-col sm:flex-row gap-4 w-full lg:w-[768px] px-4 lg:px-8 py-2">
+      <div className="flex flex-wrap flex-col sm:flex-row gap-4 w-full lg:w-[1024px] px-4 lg:px-8 py-2">
         <h1 className="text-xl">Your dashboard</h1>
 
-        <section className="w-full grid grid-cols-2 gap-4">
+        <section className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className="p-4">
             <CardContent className="p-0">
               {statisticsLoaded ? (
@@ -70,8 +76,8 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <Skeleton className="h-5" />
-                  <Skeleton className="h-8 mt-3" />
+                  <Skeleton className="h-7" />
+                  <Skeleton className="h-9 mt-2" />
                 </>
               )}
             </CardContent>
@@ -90,9 +96,56 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <Skeleton className="h-5" />
-                  <Skeleton className="h-8 mt-3" />
+                  <Skeleton className="h-7" />
+                  <Skeleton className="h-9 mt-2" />
                 </>
+              )}
+            </CardContent>
+          </Card>
+          <Card className="p-4">
+            <CardContent className="p-0">
+              <h2 className="text-lg">Categories</h2>
+              {statisticsLoaded ? (
+                expenseCategories ? (
+                  <ExpensesPieChart
+                    data={expenseCategories}
+                    currency={data?.currency}
+                  ></ExpensesPieChart>
+                ) : (
+                  <NoResults></NoResults>
+                )
+              ) : (
+                <div className="space-y-2">
+                  <Skeleton className="h-[218px] my-4" />
+                  <Skeleton className="h-5" />
+                  <Skeleton className="h-5" />
+                  <Skeleton className="h-5" />
+                  <Skeleton className="h-5" />
+                  <Skeleton className="h-5" />
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          <Card className="p-4">
+            <CardContent className="p-0">
+              <h2 className="text-lg">Weekly Expenses</h2>
+              {statisticsLoaded ? (
+                weeklyExpenses ? (
+                  <WeeklyExpensesChart
+                    data={weeklyExpenses}
+                    currency={data?.currency}
+                  ></WeeklyExpensesChart>
+                ) : (
+                  <NoResults></NoResults>
+                )
+              ) : (
+                <div className="space-y-2">
+                  <Skeleton className="h-[218px] my-4" />
+                  <Skeleton className="h-5" />
+                  <Skeleton className="h-5" />
+                  <Skeleton className="h-5" />
+                  <Skeleton className="h-5" />
+                </div>
               )}
             </CardContent>
           </Card>
@@ -119,14 +172,8 @@ export default function Home() {
                 className="py-4 space-y-4"
                 data-testid="main-skeleton-container"
               >
-                {createList(3, (i) => (
-                  <Fragment key={i}>
-                    <Skeleton className="h-8" />
-                    <Skeleton className="h-8 ml-4" />
-                    <Skeleton className="h-8 ml-4" />
-                    <Skeleton className="h-8 ml-4" />
-                    <Skeleton className="h-8 ml-4" />
-                  </Fragment>
+                {createList(8, (i) => (
+                  <Skeleton className="h-7" key={i} />
                 ))}
               </div>
             ) : (

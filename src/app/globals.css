@@ -34,17 +34,17 @@
 
     --radius: 0.25rem;
 
-    --surface: 154 100% 98%;
+    --surface: 99 2.3% 7.1%;
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
+    --background: 121 14.3% 4.1%;
     --foreground: 60 9.1% 97.8%;
 
-    --card: 20 14.3% 4.1%;
+    --card: 99 2.3% 7.1%;
     --card-foreground: 60 9.1% 97.8%;
 
-    --popover: 20 14.3% 4.1%;
+    --popover: 99 2.3% 7.1%;
     --popover-foreground: 60 9.1% 97.8%;
 
     --primary: 60 9.1% 97.8%;
@@ -66,7 +66,7 @@
     --input: 12 6.5% 15.1%;
     --ring: 24 5.7% 82.9%;
 
-    --surface: 120 100% 2%;
+    --surface: 99 2.3% 7.1%;
   }
 }
 
@@ -77,4 +77,8 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.recharts-sector:focus {
+  outline: none;
 }

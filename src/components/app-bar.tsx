@@ -12,7 +12,7 @@ function AppBar() {
   const dispatch = useAppDispatch();
 
   return (
-    <header className="fixed w-full text-lg font-semibold bg-background border-neutral-200 dark:border-neutral-800 border-b-2">
+    <header className="fixed z-[50] w-full text-lg font-semibold bg-background border-neutral-200 dark:border-neutral-800 border-b-2">
       <div className="px-4 flex justify-between items-center h-12">
         <div className="flex items-center mt-[3px]">
           <Button

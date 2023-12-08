@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { NoResults } from "@/components/no-results";
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,7 @@ export default function TransactionsPage() {
 
   return (
     <section className="flex justify-center">
-      <div className="flex flex-wrap flex-col sm:flex-row gap-2 w-full lg:w-[768px] px-4 lg:px-8 py-2">
+      <div className="flex flex-wrap flex-col sm:flex-row gap-2 w-full lg:w-[1024px] px-4 lg:px-8 py-2">
         <div className="w-full flex justify-between gap-2">
           <h1 className="text-lg leading-9">Recent transactions</h1>
 
@@ -80,14 +80,8 @@ export default function TransactionsPage() {
                 className="py-4 space-y-4"
                 data-testid="main-skeleton-container"
               >
-                {createList(3, (i) => (
-                  <Fragment key={i}>
-                    <Skeleton className="h-8" />
-                    <Skeleton className="h-8 ml-4" />
-                    <Skeleton className="h-8 ml-4" />
-                    <Skeleton className="h-8 ml-4" />
-                    <Skeleton className="h-8 ml-4" />
-                  </Fragment>
+                {createList(15, (i) => (
+                  <Skeleton className="h-7" key={i} />
                 ))}
               </div>
             ) : (

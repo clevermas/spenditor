@@ -1,7 +1,7 @@
 "use client";
 
 import { TransactionTypesEnum } from "@/lib/transaction/transaction";
-import { titleCase } from "@/lib/utils";
+import { cn, titleCase } from "@/lib/utils";
 import {
   Antenna,
   Baby,
@@ -62,20 +62,27 @@ export const ExpenseCategoriesMap = {
 export function TransactionCategory({
   type,
   category,
+  className,
+  iconColor,
 }: {
   type: string | TransactionTypesEnum;
   category:
     | string
     | keyof typeof ExpenseCategoriesMap
     | keyof typeof IncomeCategoriesMap;
+  className?;
+  iconColor?;
 }) {
   return (
-    <div className="flex items-center gap-2">
-      {(type === TransactionTypesEnum.Expense
-        ? ExpenseCategoriesMap[category as keyof typeof ExpenseCategoriesMap]
-        : IncomeCategoriesMap[
-            category as keyof typeof IncomeCategoriesMap
-          ]) || <CircleOff />}{" "}
+    <div className={cn("flex items-center gap-2", className)}>
+      <div style={iconColor ? { color: iconColor } : {}}>
+        {(type === TransactionTypesEnum.Expense
+          ? ExpenseCategoriesMap[category as keyof typeof ExpenseCategoriesMap]
+          : IncomeCategoriesMap[
+              category as keyof typeof IncomeCategoriesMap
+            ]) || <CircleOff />}{" "}
+      </div>
+
       {titleCase(category)}
     </div>
   );

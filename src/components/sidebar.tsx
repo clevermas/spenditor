@@ -18,7 +18,7 @@ function Sidebar() {
   return (
     <aside
       className={cn(
-        "lg:block z-99999 fixed left-0 top-12 h-[calc(100vh-3rem)] w-[320px]",
+        "lg:block z-[50] fixed left-0 top-12 h-[calc(100vh-3rem)] w-[280px]",
         "bg-background dark:bg-surface border-neutral-200 dark:border-neutral-800 border-r-2",
         isOpen ? "" : "hidden"
       )}
@@ -31,10 +31,7 @@ function Sidebar() {
             className={buttonVariants({
               variant: "ghost",
               size: "sm",
-              className:
-                pathname === url
-                  ? "bg-accent dark:bg-accent/80 dark:hover:bg-accent/80"
-                  : "dark:hover:bg-accent/80",
+              className: pathname === url ? "bg-accent" : "",
             }).replace("justify-center", "justify-start")}
           >
             {label}
