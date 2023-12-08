@@ -2,11 +2,10 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const accountApi = createApi({
   reducerPath: "accountApi",
-  refetchOnFocus: true,
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_ACCOUNT_API_URL,
   }),
-  tagTypes: ["AccountData"],
+  tagTypes: ["AccountData", "Statistics"],
   endpoints: (builder) => ({
     accountData: builder.query({
       queryFn: async (page, store, _, baseQuery) => {
@@ -67,13 +66,21 @@ export const accountApi = createApi({
       forceRefetch: ({ currentArg, previousArg }) => currentArg !== previousArg,
     }),
 
+    statistics: builder.query({
+      query: () => ({
+        url: `statistics`,
+        method: "GET",
+      }),
+      providesTags: () => ["Statistics"],
+    }),
+
     addTransaction: builder.mutation({
       query: (transaction) => ({
         url: `transaction`,
         method: "POST",
         body: transaction,
       }),
-      invalidatesTags: ["AccountData"],
+      invalidatesTags: ["AccountData", "Statistics"],
     }),
 
     updateTransaction: builder.mutation({
@@ -82,7 +89,7 @@ export const accountApi = createApi({
         method: "PUT",
         body: transaction,
       }),
-      invalidatesTags: ["AccountData"],
+      invalidatesTags: ["AccountData", "Statistics"],
     }),
 
     removeTransaction: builder.mutation({
@@ -90,13 +97,14 @@ export const accountApi = createApi({
         url: `transaction/${transactionId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["AccountData"],
+      invalidatesTags: ["AccountData", "Statistics"],
     }),
   }),
 });
 
 export const {
   useAccountDataQuery,
+  useStatisticsQuery,
   useAddTransactionMutation,
   useUpdateTransactionMutation,
   useRemoveTransactionMutation,

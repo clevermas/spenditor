@@ -120,7 +120,7 @@ export function TransactionForm({
                   <SelectTrigger>
                     <SelectValue placeholder="Type" />
                   </SelectTrigger>
-                  <SelectContent className="text-slate-500">
+                  <SelectContent>
                     <SelectItem value="income">Income</SelectItem>
                     <SelectItem value="expense">Expense</SelectItem>
                   </SelectContent>

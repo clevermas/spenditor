@@ -59,3 +59,5 @@ export const columns: ColumnDef<FlattenTransactionsRow>[] = [
     },
   },
 ];
+
+export const columnsWithoutActions = columns.slice(0, 3);
