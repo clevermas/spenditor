@@ -44,8 +44,8 @@ function Sidebar() {
     >
       <div
         className={cn(
-          "flex items-center pt-2",
-          isOpen ? "pl-2 pr-2 space-x-2 lg:h-12" : "flex-col space-y-1"
+          "flex items-center pt-2 px-2",
+          isOpen ? "space-x-2 lg:h-12" : "ml-[1px] flex-col space-y-1"
         )}
       >
         <Button

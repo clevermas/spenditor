@@ -25,20 +25,20 @@ export async function GET(req: Request) {
       successMap: (data) => {
         const startOfMonth = moment().startOf("month");
 
-        let expenseCategories = {};
+        let expenseCategoriesMap = {};
         data = data.filter((t) => t.date >= startOfMonth);
         data.forEach(
           (t) =>
-            (expenseCategories[t.category] =
-              (+expenseCategories[t.category] || 0) + +t.amount)
+            (expenseCategoriesMap[t.category] =
+              (+expenseCategoriesMap[t.category] || 0) + +t.amount)
         );
-        expenseCategories = Object.keys(expenseCategories)
+        let expenseCategories = Object.keys(expenseCategoriesMap)
           .sort((prev, next) =>
-            expenseCategories[prev] > expenseCategories[next] ? 1 : -1
+            expenseCategoriesMap[prev] > expenseCategoriesMap[next] ? 1 : -1
           )
           .map((category) => ({
             name: category,
-            value: Math.abs(expenseCategories[category]),
+            value: Math.abs(expenseCategoriesMap[category]),
           }));
 
         if (expenseCategories.length > 5) {
@@ -59,20 +59,22 @@ export async function GET(req: Request) {
           ];
         }
 
-        const weeklyExpenses = createList(4, (i) => ({
-          name: "Week " + (i + 1),
-          amount: data.reduce((amount, transaction) => {
-            const onThisWeek =
-              transaction.date >=
-                moment(startOfMonth).add(i, "weeks").toDate() &&
-              transaction.date <
-                moment(startOfMonth)
-                  .add(i + 1, "weeks")
-                  .toDate();
+        const weeklyExpenses =
+          data?.length &&
+          createList(4, (i) => ({
+            name: "Week " + (i + 1),
+            amount: data.reduce((amount, transaction) => {
+              const onThisWeek =
+                transaction.date >=
+                  moment(startOfMonth).add(i, "weeks").toDate() &&
+                transaction.date <
+                  moment(startOfMonth)
+                    .add(i + 1, "weeks")
+                    .toDate();
 
-            return amount + (onThisWeek ? Math.abs(transaction.amount) : 0);
-          }, 0),
-        }));
+              return amount + (onThisWeek ? Math.abs(transaction.amount) : 0);
+            }, 0),
+          }));
 
         const total = Math.abs(
           data.reduce((amount, t) => amount + +t.amount, 0)

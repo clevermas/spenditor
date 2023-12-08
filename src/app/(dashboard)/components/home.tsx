@@ -106,7 +106,7 @@ export default function Home() {
             <CardContent className="p-0">
               <h2 className="text-lg">Categories</h2>
               {statisticsLoaded ? (
-                expenseCategories ? (
+                expenseCategories?.length ? (
                   <ExpensesPieChart
                     data={expenseCategories}
                     currency={data?.currency}
