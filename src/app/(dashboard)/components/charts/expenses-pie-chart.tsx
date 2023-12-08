@@ -41,7 +41,7 @@ function ExpensesPieChart({ data, currency }: ExpensesPieChartProps) {
           </Pie>
         </PieChart>
       </div>
-      <div className="space-y-1">
+      <div className="space-y-1 mt-4">
         {data?.map(({ name, value }, i) => (
           <div className="flex justify-between" key={name}>
             {name === "other" ? (

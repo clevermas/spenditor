@@ -41,7 +41,7 @@ function WeeklyExpensesChart({ data, currency }: WeeklyExpensesChartProps) {
           />
         </LineChart>
       </div>
-      <div className="space-y-1">
+      <div className="space-y-1 mt-4">
         {data?.map(({ name, amount }, i) => (
           <div className="flex justify-between" key={name}>
             {name}

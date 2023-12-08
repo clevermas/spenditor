@@ -1,11 +1,9 @@
-import AppBar from "@/components/app-bar";
-import Sidebar from "@/components/sidebar";
+import Sidebar from "@/components/sidebar/sidebar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <AppBar></AppBar>
-      <div className="min-h-screen lg:px-[280px] pt-12 bg-neutral-50 dark:bg-background">
+      <div className="min-h-screen pl-[56px] lg:px-[280px] bg-neutral-50 dark:bg-background">
         <Sidebar></Sidebar>
         <main>{children}</main>
       </div>
