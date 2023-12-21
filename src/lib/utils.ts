@@ -21,3 +21,8 @@ export function createList<T>(n: number, mapFn: (i: number) => T): T[] {
 export function randomNItems(n) {
   return Math.ceil(Math.random() * n);
 }
+
+export interface ListItem {
+  name: string;
+  value: number;
+}

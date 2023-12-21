@@ -2,22 +2,24 @@
 
 import { useEffect, useMemo } from "react";
 
-import { createList } from "@/lib/utils";
-import { useAppDispatch } from "@/redux/hooks";
-import Link from "next/link";
-
 import { Amount } from "@/components/amount";
 import { NoResults } from "@/components/no-results";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
+import Link from "next/link";
+
 import { flattenTransactions } from "@/lib/transaction/transaction";
+import { createList } from "@/lib/utils";
+
+import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
+import { useAppDispatch } from "@/redux/hooks";
 import {
   accountApi,
   useAccountDataQuery,
   useStatisticsQuery,
 } from "@/redux/services/account-api";
+
 import ExpensesPieChart from "./charts/expenses-pie-chart";
 import WeeklyExpensesChart from "./charts/weekly-expenses-chart";
 import { DataTable } from "./transaction/data-table";
@@ -75,10 +77,10 @@ export default function Home() {
                   ></Amount>
                 </>
               ) : (
-                <>
+                <div data-testid="expenses-skeleton">
                   <Skeleton className="h-7" />
                   <Skeleton className="h-9 mt-2" />
-                </>
+                </div>
               )}
             </CardContent>
           </Card>
@@ -95,58 +97,31 @@ export default function Home() {
                   ></Amount>
                 </>
               ) : (
-                <>
+                <div data-testid="balance-skeleton">
                   <Skeleton className="h-7" />
                   <Skeleton className="h-9 mt-2" />
-                </>
+                </div>
               )}
             </CardContent>
           </Card>
           <Card className="p-4">
             <CardContent className="p-0">
               <h2 className="text-lg">Categories</h2>
-              {statisticsLoaded ? (
-                expenseCategories?.length ? (
-                  <ExpensesPieChart
-                    data={expenseCategories}
-                    currency={data?.currency}
-                  ></ExpensesPieChart>
-                ) : (
-                  <NoResults></NoResults>
-                )
-              ) : (
-                <div className="space-y-2">
-                  <Skeleton className="h-[218px] my-4" />
-                  <Skeleton className="h-5" />
-                  <Skeleton className="h-5" />
-                  <Skeleton className="h-5" />
-                  <Skeleton className="h-5" />
-                  <Skeleton className="h-5" />
-                </div>
-              )}
+              <ExpensesPieChart
+                data={expenseCategories}
+                currency={data?.currency}
+                loading={!statisticsLoaded}
+              ></ExpensesPieChart>
             </CardContent>
           </Card>
           <Card className="p-4">
             <CardContent className="p-0">
               <h2 className="text-lg">Weekly Expenses</h2>
-              {statisticsLoaded ? (
-                weeklyExpenses ? (
-                  <WeeklyExpensesChart
-                    data={weeklyExpenses}
-                    currency={data?.currency}
-                  ></WeeklyExpensesChart>
-                ) : (
-                  <NoResults></NoResults>
-                )
-              ) : (
-                <div className="space-y-2">
-                  <Skeleton className="h-[218px] my-4" />
-                  <Skeleton className="h-5" />
-                  <Skeleton className="h-5" />
-                  <Skeleton className="h-5" />
-                  <Skeleton className="h-5" />
-                </div>
-              )}
+              <WeeklyExpensesChart
+                data={weeklyExpenses}
+                currency={data?.currency}
+                loading={!statisticsLoaded}
+              ></WeeklyExpensesChart>
             </CardContent>
           </Card>
         </section>
@@ -168,10 +143,7 @@ export default function Home() {
             {dataLoaded ? (
               <DataTable data={transactions} readonly={true}></DataTable>
             ) : isFetching ? (
-              <div
-                className="py-4 space-y-4"
-                data-testid="main-skeleton-container"
-              >
+              <div className="py-4 space-y-4" data-testid="main-skeleton">
                 {createList(8, (i) => (
                   <Skeleton className="h-7" key={i} />
                 ))}
