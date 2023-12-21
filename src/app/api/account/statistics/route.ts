@@ -5,7 +5,15 @@ import { Transaction } from "@/db/transaction";
 import { currentAccount } from "@/lib/current-account";
 import { handleMongoDbQuery } from "@/lib/error-handling";
 import { TransactionTypesEnum } from "@/lib/transaction/transaction";
-import { createList } from "@/lib/utils";
+import { createList, ListItem } from "@/lib/utils";
+
+export interface StatisticsResponseDTO {
+  currentMonth: {
+    expenseCategories: ListItem[];
+    weeklyExpenses: ListItem[];
+    total: number;
+  };
+}
 
 export async function GET(req: Request) {
   const account = (await currentAccount()) as AccountClass;
@@ -63,7 +71,7 @@ export async function GET(req: Request) {
           data?.length &&
           createList(4, (i) => ({
             name: "Week " + (i + 1),
-            amount: data.reduce((amount, transaction) => {
+            value: data.reduce((value, transaction) => {
               const onThisWeek =
                 transaction.date >=
                   moment(startOfMonth).add(i, "weeks").toDate() &&
@@ -72,7 +80,7 @@ export async function GET(req: Request) {
                     .add(i + 1, "weeks")
                     .toDate();
 
-              return amount + (onThisWeek ? Math.abs(transaction.amount) : 0);
+              return value + (onThisWeek ? Math.abs(transaction.amount) : 0);
             }, 0),
           }));
 

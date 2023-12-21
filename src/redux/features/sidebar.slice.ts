@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-type ModalState = {
+type SidebarState = {
   isOpen: boolean;
 };
 
 export const initialState = {
   isOpen: false,
-} as ModalState;
+} as SidebarState;
 
 export const sidebar = createSlice({
   name: "sidebar",

@@ -5,6 +5,9 @@ const handlers = [
   http.get("/api/account", () => {
     return HttpResponse.json({});
   }),
+  http.get("/api/account/statistics", () => {
+    return HttpResponse.json({});
+  }),
   http.post("/api/account/transaction", () => {
     return HttpResponse.json({});
   }),

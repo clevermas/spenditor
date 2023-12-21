@@ -5,20 +5,17 @@ import { useEffect, useMemo, useState } from "react";
 import { NoResults } from "@/components/no-results";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-
-import { open } from "@/redux/features/modal.slice";
-import { useAppDispatch } from "@/redux/hooks";
-
-import { createList } from "@/lib/utils";
-
-import { accountApi, useAccountDataQuery } from "@/redux/services/account-api";
-
-import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { flattenTransactions } from "@/lib/transaction/transaction";
+import { createList } from "@/lib/utils";
+
+import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
+import { open } from "@/redux/features/modal.slice";
+import { useAppDispatch } from "@/redux/hooks";
+import { accountApi, useAccountDataQuery } from "@/redux/services/account-api";
 
 import { DataTable } from "@/app/(dashboard)/components/transaction/data-table";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TransactionsPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -76,10 +73,7 @@ export default function TransactionsPage() {
             {isSuccess ? (
               <DataTable data={transactions}></DataTable>
             ) : isFetching ? (
-              <div
-                className="py-4 space-y-4"
-                data-testid="main-skeleton-container"
-              >
+              <div className="py-4 space-y-4" data-testid="main-skeleton">
                 {createList(15, (i) => (
                   <Skeleton className="h-7" key={i} />
                 ))}

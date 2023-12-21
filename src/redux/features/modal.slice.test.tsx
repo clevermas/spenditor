@@ -1,6 +1,5 @@
 import { close, initialState, open, reset } from "@/redux/features/modal.slice";
 import { setupStore } from "@/redux/store";
-import "@testing-library/jest-dom";
 
 describe("Modal Slice", () => {
   const modalTypes = [

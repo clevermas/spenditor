@@ -1,6 +1,9 @@
 "use client";
 
 import { Amount } from "@/components/amount";
+import { NoResults } from "@/components/no-results";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ListItem } from "@/lib/utils";
 import { Line, LineChart, Tooltip, YAxis } from "recharts";
 
 interface CustomTooltipProps {
@@ -17,12 +20,25 @@ const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
 };
 
 interface WeeklyExpensesChartProps {
-  data: { name: string; amount: number }[];
+  data: ListItem[];
   currency: string;
+  loading?: boolean;
 }
 
-function WeeklyExpensesChart({ data, currency }: WeeklyExpensesChartProps) {
-  return (
+function WeeklyExpensesChart({
+  data,
+  currency,
+  loading,
+}: WeeklyExpensesChartProps) {
+  return loading ? (
+    <div className="space-y-2" data-testid="weekly-expenses-chart-skeleton">
+      <Skeleton className="h-[218px] my-4" />
+      <Skeleton className="h-5" />
+      <Skeleton className="h-5" />
+      <Skeleton className="h-5" />
+      <Skeleton className="h-5" />
+    </div>
+  ) : data?.length ? (
     <>
       <div className="flex justify-center">
         <LineChart
@@ -35,22 +51,24 @@ function WeeklyExpensesChart({ data, currency }: WeeklyExpensesChartProps) {
           <Tooltip content={<CustomTooltip />} />
           <Line
             type="monotone"
-            dataKey="amount"
+            dataKey="value"
             stroke="#0088fe"
             strokeWidth={3}
           />
         </LineChart>
       </div>
       <div className="space-y-1 mt-4">
-        {data?.map(({ name, amount }, i) => (
+        {data?.map(({ name, value }, i) => (
           <div className="flex justify-between" key={name}>
             {name}
 
-            <Amount value={amount} currency={currency}></Amount>
+            <Amount value={value} currency={currency}></Amount>
           </div>
         ))}
       </div>
     </>
+  ) : (
+    <NoResults />
   );
 }
 

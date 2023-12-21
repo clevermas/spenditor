@@ -5,10 +5,10 @@ import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 interface ModeToggleProps {
-  className: string;
+  className?: string;
 }
 
-function ModeToggle({ className }: ModeToggleProps) {
+function DarkModeToggle({ className }: ModeToggleProps) {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -25,4 +25,4 @@ function ModeToggle({ className }: ModeToggleProps) {
   );
 }
 
-export default ModeToggle;
+export default DarkModeToggle;
