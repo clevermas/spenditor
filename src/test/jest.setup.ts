@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 import { accountApi } from "@/redux/services/account-api";
 import { setupStore } from "@/redux/store";
 import { server } from "./server";

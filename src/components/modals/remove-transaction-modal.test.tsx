@@ -1,28 +1,27 @@
-import { renderWithProviders } from "@/test/test-utils";
-import "@testing-library/jest-dom";
+import { renderWithProviders } from "@/test/test-utils"; 
+import { RemoveTransactionModal } from "./remove-transaction-modal"; 
 import { fireEvent, screen } from "@testing-library/react";
-
-import { close } from "@/redux/features/modal.slice";
 import { generateTransaction } from "@/test/mocks/account-api";
-import { RemoveTransactionModal } from "./remove-transaction-modal";
+import { close } from "@/redux/features/modal.slice";
 
 const requestReset = jest.fn();
 const initalUpdateRequest = () => ({ status: "", reset: requestReset });
+const dispatch = jest.fn();
+
 let removeTransaction = jest.fn();
 let removeRequest = initalUpdateRequest();
+let isDispatchMocked = true;
 
 jest.mock("../../redux/services/account-api", () => ({
   ...jest.requireActual("../../redux/services/account-api"),
   useRemoveTransactionMutation: () => [removeTransaction, removeRequest],
 }));
 
-const dispatch = jest.fn();
-
 jest.mock("react-redux", () => {
   const actual = jest.requireActual("react-redux");
   return {
     ...actual,
-    useDispatch: () => dispatch,
+    useDispatch: () => isDispatchMocked ? dispatch : actual.useDispatch(),
   };
 });
 
@@ -32,13 +31,23 @@ describe("Remove Transaction Modal", () => {
       modalReducer: {
         type: "removeTransaction",
         isOpen: true,
-        data: generateTransaction(),
+        data: {
+          transactionId: 'mocked'
+        }
       },
     },
   };
 
+  function cancelButton() {
+    return screen.getByText("Cancel");
+  }
+
   function removeButton() {
     return screen.getByText("Remove");
+  }
+
+  function closeButton() {
+    return screen.getByRole('button', { name: /close/i });
   }
 
   beforeEach(() => {
@@ -58,15 +67,14 @@ describe("Remove Transaction Modal", () => {
     const text = screen.getByText(
       "This action cannot be undone. This will permanently delete the transaction."
     );
-
     expect(text).toBeInTheDocument();
   });
 
   test("renders cancel button", () => {
     renderWithProviders(<RemoveTransactionModal />, state);
 
-    expect(screen.getByText("Cancel")).toBeInTheDocument();
-    expect(screen.getByText("Cancel")).not.toBeDisabled();
+    expect(cancelButton()).toBeInTheDocument();
+    expect(cancelButton()).not.toBeDisabled();
   });
 
   test("renders remove button", () => {
@@ -76,14 +84,44 @@ describe("Remove Transaction Modal", () => {
     expect(removeButton()).not.toBeDisabled();
   });
 
-  test("closes modal on removal", () => {
-    renderWithProviders(<RemoveTransactionModal />, state);
-    fireEvent.click(removeButton());
-    removeRequest.status = "fulfilled";
+  test("removes transaction on remove button click", () => {
     renderWithProviders(<RemoveTransactionModal />, state);
 
-    expect(removeTransaction).toHaveBeenCalled();
-    expect(requestReset).toHaveBeenCalled();
+    fireEvent.click(removeButton());
+
+    expect(removeTransaction).toHaveBeenCalledWith('mocked');
+  });
+
+  test("disables remove button when mutation is pending", () => {
+    removeRequest.status = "pending";
+    renderWithProviders(<RemoveTransactionModal />, state);
+
+    expect(removeButton()).toBeDisabled();
+  });
+
+  test("dispatches close action when cancel button is clicked", () => {
+    renderWithProviders(<RemoveTransactionModal />, state);
+
+    fireEvent.click(cancelButton());
+    
     expect(dispatch).toHaveBeenCalledWith(close());
+  });
+
+  test("dispatches close action when close button is clicked", () => {
+    renderWithProviders(<RemoveTransactionModal />, state);
+
+    
+    fireEvent.click(closeButton());
+    
+    expect(dispatch).toHaveBeenCalledWith(close());
+  });
+
+  test("resets the modal on close", () => {
+    isDispatchMocked = false;
+    renderWithProviders(<RemoveTransactionModal />, state);
+
+    fireEvent.click(closeButton());
+
+    expect(requestReset).toHaveBeenCalled();
   });
 });

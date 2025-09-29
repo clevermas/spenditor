@@ -11,7 +11,7 @@ export type AddTransactionModalData = Exclude<TransactionClass, { id: string }>;
 export type EditTransactionModalData = TransactionClass;
 export type RemoveTransactionModalData = { transactionId: string };
 
-type ModalData =
+export type ModalData =
   | AddTransactionModalData
   | EditTransactionModalData
   | RemoveTransactionModalData;

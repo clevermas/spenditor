@@ -1,46 +1,57 @@
-import { renderWithProviders } from "@/test/test-utils";
-import "@testing-library/jest-dom";
-import { fireEvent, screen } from "@testing-library/react";
-
-import { close } from "@/redux/features/modal.slice";
+import { renderWithProviders } from "@/test/test-utils"; 
+import { fireEvent, screen, cleanup } from "@testing-library/react";
 import { generateTransaction } from "@/test/mocks/account-api";
-import { EditTransactionModal } from "./edit-transaction-modal";
+import { EditTransactionModal } from "./edit-transaction-modal"; 
+import { close } from "@/redux/features/modal.slice";
 
-const handleSubmit = jest.fn();
 const reset = jest.fn();
+const requestReset = jest.fn();
+const initalUpdateRequest = () => ({ status: "", reset: requestReset });
+const dispatch = jest.fn();
+
+let editTransaction = jest.fn();
+let isFormChanged = false;
+let isDispatchMocked = true;
+let updateRequest = initalUpdateRequest();
 
 jest.mock("../transaction/transaction-form", () => {
   const form = jest.requireActual("../transaction/transaction-form");
   return {
     ...form,
     TransactionForm: () => {},
-    useTransactionForm: () => ({
-      form: {
-        ...form.useTransactionForm().form,
-        handleSubmit,
-        reset,
-      },
-    }),
+    useTransactionForm: () => {
+      const originalForm = form.useTransactionForm().form;
+      return {
+        TransactionForm: () => null,
+        form: {
+          ...originalForm,
+          handleSubmit: (fn) => fn({ comment: 'mock updated' }),
+          reset,
+          getValues: jest.fn(() => {
+            if (isFormChanged) {
+              return {
+                ...originalForm.getValues(),
+                [Object.keys(originalForm.getValues())?.[0]]: "mock changed"
+              };
+            }
+            return originalForm.getValues();
+          }),
+        }
+      }
+    }
   };
 });
-
-const requestReset = jest.fn();
-const initalUpdateRequest = () => ({ status: "", reset: requestReset });
-let editTransaction = jest.fn();
-let updateRequest = initalUpdateRequest();
 
 jest.mock("../../redux/services/account-api", () => ({
   ...jest.requireActual("../../redux/services/account-api"),
   useUpdateTransactionMutation: () => [editTransaction, updateRequest],
 }));
 
-const dispatch = jest.fn();
-
 jest.mock("react-redux", () => {
   const actual = jest.requireActual("react-redux");
   return {
     ...actual,
-    useDispatch: () => dispatch,
+    useDispatch: () => isDispatchMocked ? dispatch : actual.useDispatch(),
   };
 });
 
@@ -50,7 +61,10 @@ describe("Edit Transaction Modal", () => {
       modalReducer: {
         type: "editTransaction",
         isOpen: true,
-        data: generateTransaction(),
+        data: {
+          ...generateTransaction(),
+          date: 'mocked'
+        }
       },
     },
   };
@@ -60,10 +74,10 @@ describe("Edit Transaction Modal", () => {
   }
 
   beforeEach(() => {
-    handleSubmit.mockClear();
-    reset.mockClear();
-    requestReset.mockClear();
-    editTransaction.mockClear();
+    jest.clearAllMocks(); 
+    isFormChanged = false;
+    isDispatchMocked = true;
+    updateRequest = initalUpdateRequest();
   });
 
   test("renders heading", () => {
@@ -76,28 +90,58 @@ describe("Edit Transaction Modal", () => {
     renderWithProviders(<EditTransactionModal />, state);
 
     expect(saveButton()).toBeInTheDocument();
-    expect(saveButton()).not.toBeDisabled();
+  });
+
+  test("disables save button when form is not changed", () => {
+    updateRequest.status = "mocked";
+
+    renderWithProviders(<EditTransactionModal />, state);
+
+    expect(saveButton()).toBeDisabled();
   });
 
   test("submits form on save button click", () => {
+    isFormChanged = true;
     renderWithProviders(<EditTransactionModal />, state);
 
     fireEvent.click(saveButton());
 
-    expect(handleSubmit).toHaveBeenCalled();
+    expect(saveButton()).not.toBeDisabled();
+    expect(editTransaction).toHaveBeenCalledWith({
+      ...state.preloadedState.modalReducer.data,
+      comment: 'mock updated'
+    });
   });
 
-  test("resets form and closes modal on save", () => {
-    handleSubmit.mockImplementation((cb) => () => cb());
-
+  test("disables save button when mutation is pending", () => {
+    isFormChanged = true;
     renderWithProviders(<EditTransactionModal />, state);
-    const button = screen.getByText("Save");
-    fireEvent.click(saveButton());
-    updateRequest.status = "fulfilled";
+    expect(saveButton()).not.toBeDisabled();
+    
+    updateRequest.status = "pending";
+    cleanup();
     renderWithProviders(<EditTransactionModal />, state);
 
-    expect(editTransaction).toHaveBeenCalled();
-    expect(requestReset).toHaveBeenCalled();
+    expect(saveButton()).toBeDisabled();
+  });
+
+  test("dispatches close action when close button is clicked", () => {
+    renderWithProviders(<EditTransactionModal />, state);
+
+    const closeButton = screen.getByRole('button', { name: /close/i });
+    fireEvent.click(closeButton);
+    
     expect(dispatch).toHaveBeenCalledWith(close());
+  });
+
+  test("resets the modal on close", () => {
+    isDispatchMocked = false;
+    renderWithProviders(<EditTransactionModal />, state);
+
+    const closeButton = screen.getByRole('button', { name: /close/i });
+    fireEvent.click(closeButton);
+
+    expect(reset).toHaveBeenCalled();
+    expect(requestReset).toHaveBeenCalled();
   });
 });
