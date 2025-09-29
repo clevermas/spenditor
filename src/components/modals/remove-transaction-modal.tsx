@@ -1,7 +1,5 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,43 +10,43 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
-
+import { useTransactionModal } from "@/hooks/use-transaction-modal";
 import {
   close,
-  ModalType,
   RemoveTransactionModalData,
 } from "@/redux/features/modal.slice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import { useRemoveTransactionMutation } from "@/redux/services/account-api";
 
 export function RemoveTransactionModal() {
-  const { type, isOpen, data } = useAppSelector((state) => state.modalReducer);
-  const [removeTransaction, removeRequest] = useRemoveTransactionMutation();
   const dispatch = useAppDispatch();
-  const isModalOpen = (isOpen &&
-    type &&
-    type === ("removeTransaction" as ModalType)) as boolean | undefined;
 
-  useErrorToastHandler(removeRequest?.error);
+  const mutation = useRemoveTransactionMutation();
+  const [mutationTrigger, mutationResult] = mutation;
 
-  const handleClose = useCallback(() => {
-    removeRequest?.reset();
+  const [isOpen, data] = useTransactionModal(
+    "removeTransaction",
+    mutation,
+    () => {},
+    onClose
+  );
+
+  const isPending = mutationResult.status === "pending";
+
+  function onClose() {
+    mutationResult?.reset();
+  }
+
+  function handleClose() {
     dispatch(close());
-  }, [dispatch, removeRequest]);
+  }
 
-  useEffect(() => {
-    if (removeRequest.status === "fulfilled") {
-      handleClose();
-    }
-  }, [removeRequest.status, handleClose]);
-
-  function onSubmit() {
-    removeTransaction((data as RemoveTransactionModalData).transactionId);
+  function handleSubmit() {
+    mutationTrigger((data as RemoveTransactionModalData).transactionId);
   }
 
   return (
-    <Dialog open={isModalOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Remove transaction</DialogTitle>
@@ -61,11 +59,7 @@ export function RemoveTransactionModal() {
           <Button variant="secondary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            disabled={removeRequest.status === "pending"}
-            onClick={onSubmit}
-          >
+          <Button type="submit" disabled={isPending} onClick={handleSubmit}>
             Remove
           </Button>
         </DialogFooter>

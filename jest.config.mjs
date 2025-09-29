@@ -14,7 +14,10 @@ const config = {
   testEnvironment: "<rootDir>/src/test/custom-test-env.js",
 
   testEnvironmentOptions: {
-    customExportConditions: [""],
+    customExportConditions: [""]
+  },
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
 };
 
