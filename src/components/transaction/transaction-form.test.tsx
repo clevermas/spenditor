@@ -65,6 +65,8 @@ describe("Transaction Form", () => {
 
   const fields = { amount: "-1", date: new Date() };
 
+  // TODO: cover date change case
+
   [
     [
       "renders error after invalid type",

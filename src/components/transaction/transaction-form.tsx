@@ -75,7 +75,7 @@ export const formSchema = z
 export const useTransactionForm = () => {
   const defaultValues = {
     type: "expense",
-    category: "uncategorised",
+    category: "expense",
     tags: [],
     amount: "",
   };
@@ -98,6 +98,11 @@ export function TransactionForm({
 }: TransactionFormProps<z.infer<typeof formSchema>>) {
   const transactionType = form.getValues("type");
   const isExpense = form.getValues("type") === TransactionTypesEnum.Expense;
+
+  const onDateChange = (date: Date | null, field: { onChange: (value: Date | null) => void }) => {
+    const newDate = moment.utc(moment(date).format("YYYY-MM-DD")).toDate();
+    field.onChange(newDate);
+  }
 
   return (
     <Form {...form}>
@@ -182,7 +187,7 @@ export function TransactionForm({
                         )}
                       >
                         {field.value ? (
-                          moment(field.value).format("DD/MM/YYYY")
+                          moment.utc(field.value).format("DD/MM/YYYY")
                         ) : (
                           <span>Pick a date</span>
                         )}
@@ -198,7 +203,7 @@ export function TransactionForm({
                     <Calendar
                       mode="single"
                       selected={field.value}
-                      onSelect={field.onChange}
+                      onSelect={(date) => onDateChange(date, field)}
                       disabled={(date) =>
                         date > new Date() || date < new Date("1900-01-01")
                       }

@@ -1,5 +1,5 @@
 export const ExpenseCategoriesList = [
-  "uncategorised",
+  "expense",
   "food and supermarkets",
   "home",
   "transport",
@@ -22,7 +22,7 @@ export const ExpenseCategoriesList = [
 ];
 
 export const IncomeCategoriesList = [
-  "uncategorised",
+  "income",
   "salary",
   "business",
   "part-time job",

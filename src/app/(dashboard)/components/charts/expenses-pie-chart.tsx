@@ -1,15 +1,38 @@
-"use client";
+"use client"
+
+import { Pie, PieChart } from "recharts";
+
+import { NoResults } from "@/components/no-results";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ListItem, titleCase } from "@/lib/utils";
+import { useMemo } from "react";
 
 import { Amount } from "@/components/amount";
-import { NoResults } from "@/components/no-results";
-import { TransactionCategory } from "@/components/transaction/transaction-category";
-import { Skeleton } from "@/components/ui/skeleton";
-import { TransactionTypesEnum } from "@/lib/transaction/transaction";
-import { ListItem } from "@/lib/utils";
-import { Circle } from "lucide-react";
-import { Cell, Pie, PieChart } from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
-const Colors = ["#e42b41", "#0088fe", "#00c49f", "#ff8042", "#5d5d5d"];
+const COLORS = [
+  "#7d86ff",
+  "#625fff",
+  "#4f3af7",
+  "#432dd7",
+  "#3729ac",
+];
+
+const CustomLegendIcon = ({ color }: { color: string }) => (
+  <div
+    className="h-2 w-2 shrink-0 rounded-full"
+    style={{
+      backgroundColor: color,
+    }}
+  />
+);
 
 interface ExpensesPieChartProps {
   data: ListItem[];
@@ -17,71 +40,98 @@ interface ExpensesPieChartProps {
   loading?: boolean;
 }
 
-function ExpensesPieChart({ data, currency, loading }: ExpensesPieChartProps) {
-  return (
-    <>
-      {loading ? (
-        <div className="space-y-2" data-testid="expenses-pie-chart-skeleton">
-          <Skeleton className="h-[218px] my-4" />
-          <Skeleton className="h-5" />
-          <Skeleton className="h-5" />
-          <Skeleton className="h-5" />
-          <Skeleton className="h-5" />
-          <Skeleton className="h-5" />
-        </div>
-      ) : data?.length ? (
-        <>
-          <div className="flex justify-center">
-            <PieChart
-              width={300}
-              height={250}
-              margin={{ top: 5, right: 0, left: 0, bottom: 15 }}
-            >
-              <Pie
-                data={data}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={80}
-                paddingAngle={5}
-                fill="#82ca9d"
-                labelLine={false}
-                label={false}
-              >
-                {data?.map((_, i) => (
-                  <Cell key={`cell-${i}`} fill={Colors[i % Colors.length]} />
-                ))}
-              </Pie>
-            </PieChart>
-          </div>
-          <div className="space-y-1 mt-4">
-            {data?.map(({ name, value }, i) => (
-              <div className="flex justify-between" key={name}>
-                {name === "other" ? (
-                  <div className="flex gap-2">
-                    <Circle style={{ color: Colors[i] }} />
-                    Other
-                  </div>
-                ) : (
-                  <TransactionCategory
-                    iconColor={Colors[i]}
-                    type={TransactionTypesEnum.Expense}
-                    category={name}
-                  ></TransactionCategory>
-                )}
+export function ExpensesPieChart({
+  data,
+  currency,
+  loading,
+}: ExpensesPieChartProps) {
+  const chartData = useMemo(() => {
+    if (loading || !data) {
+      return [];
+    }
+    return data.map((item, i) => ({
+      category: `category-${i + 1}`,
+      expenses: item.value,
+      fill: COLORS[i % COLORS.length],
+    }));
+  }, [data, loading]);
 
-                <Amount value={value} currency={currency}></Amount>
-              </div>
-            ))}
-          </div>
-        </>
-      ) : (
-        <NoResults />
-      )}{" "}
-    </>
+  const chartConfig = useMemo(() => {
+    const config: ChartConfig = {
+      expenses: {
+        label: "Expenses",
+      },
+    };
+     if (loading || !data) {
+      return config;
+    }
+    data.forEach((item, i) => {
+      const color = COLORS[i % COLORS.length];
+      config[`category-${i + 1}`] = {
+        label: titleCase(item.name),
+        color: color,
+        icon: () => <CustomLegendIcon color={color} />,
+      };
+    });
+    return config;
+  }, [data, loading]);
+
+  if (loading) {
+    return (
+      <div className="flex h-[300px] flex-col items-center justify-center">
+        <Skeleton className="h-full w-full" />
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex h-[300px] flex-col items-center justify-center">
+        <NoResults/>
+      </div>
+    );
+  }
+
+  return (
+    <ChartContainer
+      config={chartConfig}
+      className="mx-auto aspect-square h-[300px]"
+    >
+      <PieChart margin={{ top: -10, bottom: 12 }}>
+        <ChartTooltip
+          cursor={false}
+          content={
+            <ChartTooltipContent
+              hideLabel
+              formatter={(value, name) => {
+                const categoryConfig = chartConfig[name as keyof typeof chartConfig];
+                const color = categoryConfig?.color || "#000000";
+                return (
+                  <>
+                    <div
+                      className="h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: color } as React.CSSProperties}
+                    />
+                    {titleCase((categoryConfig?.label || name) as string)}
+                    <Amount value={+value} className="text-sm" currency={currency} />
+                  </>
+                );
+              }}
+            />
+          }
+        />
+        <Pie
+          data={chartData}
+          dataKey="expenses"
+          nameKey="category"
+          innerRadius={60}
+          strokeWidth={5}
+        />
+        <ChartLegend
+          content={<ChartLegendContent nameKey="category" />}
+          className="translate-y-2.5 flex-wrap gap-2 *:basis-1/4 *:justify-center text-base"
+        />
+      </PieChart>
+    </ChartContainer>
   );
 }
-
-export default ExpensesPieChart;

@@ -14,5 +14,5 @@ export function Amount({
     currency,
   }).format(isNaN(value) ? 0 : value);
 
-  return <div className={cn("text-right", className)}>{amount}</div>;
+  return <div className={cn("text-base text-right", className)}>{amount}</div>;
 }

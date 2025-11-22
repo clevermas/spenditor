@@ -28,7 +28,7 @@ export function DataTableActions({ data }: { data: TransactionClass }) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="w-7 h-7 p-1" aria-label="actions">
-            <MoreVertical />
+            <MoreVertical size={16} strokeWidth={2} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>

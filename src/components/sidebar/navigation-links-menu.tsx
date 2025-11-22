@@ -7,8 +7,8 @@ import { usePathname } from "next/navigation";
 import { sidebarBurgerMenuVariant } from "./sidebar";
 
 const NavigationLinksIcons = {
-  Home: <Home />,
-  Transactions: <TableProperties />,
+  Home: Home,
+  Transactions: TableProperties,
 };
 
 const navigationLinks = [
@@ -30,32 +30,34 @@ function NavigationLinksMenu({
 
   return (
     <>
-      {navigationLinks.map(([url, label]) => (
-        <Link
-          href={url}
-          key={label}
-          onClick={() => onLinkClick()}
-          className={buttonVariants({
-            variant: "ghost",
-            size: isMobile ? "default" : isOpen ? "default" : "sm",
-            className: cn(
+      {navigationLinks.map(([url, label]) => {
+        const Icon = NavigationLinksIcons[label];
+        return (
+          <Link
+            href={url}
+            key={label}
+            onClick={() => onLinkClick()}
+            className={cn(
+              buttonVariants({
+                variant: "ghost",
+                size: isMobile ? "default" : isOpen ? "default" : "sm",
+              }),
               currentUrl === url
                 ? "bg-sidebar-accent/80 dark:bg-sidebar-accent/50 dark:hover:bg-sidebar-accent"
                 : "",
               "space-x-2",
-              sidebarBurgerMenuVariant
-            ),
-          })
-            .replace("inline-flex", "flex")
-            .replace("px-4", "px-2")
-            .replace("justify-center", "justify-start")}
-        >
-          {NavigationLinksIcons[label]}
-          <span className={isMobile ? "" : isOpen ? "" : "hidden"}>
-            {label}
-          </span>
-        </Link>
-      ))}
+              sidebarBurgerMenuVariant,
+              "flex justify-start",
+              isOpen ? "py-2" : "py-1"
+            )}
+          >
+            <Icon size={16}/>
+            <span className={cn(isMobile ? "" : isOpen ? "" : "hidden", isOpen ? "text-sm" : "text-xs")}>
+              {label}
+            </span>
+          </Link>
+        )
+      })}
     </>
   );
 }

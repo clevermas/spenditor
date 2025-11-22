@@ -1,11 +1,13 @@
 import moment from "moment";
+import { NextResponse } from "next/server";
 
-import { AccountClass } from "@/db/account";
-import { Transaction } from "@/db/transaction";
 import { currentAccount } from "@/lib/current-account";
 import { handleMongoDbQuery } from "@/lib/error-handling";
+import { monthlyExpenses, weeklyExpenses } from "@/lib/statistics";
 import { TransactionTypesEnum } from "@/lib/transaction/transaction";
-import { createList, ListItem } from "@/lib/utils";
+import { ListItem } from "@/lib/utils";
+
+import { Transaction } from "@/db/transaction";
 
 export interface StatisticsResponseDTO {
   currentMonth: {
@@ -16,7 +18,13 @@ export interface StatisticsResponseDTO {
 }
 
 export async function GET(req: Request) {
-  const account = (await currentAccount()) as AccountClass;
+  const account = await currentAccount();
+
+  if (account instanceof NextResponse) {
+    return account;
+  }
+
+  const startOfMonth = moment.utc().startOf("month");
 
   return await handleMongoDbQuery(
     async () =>
@@ -30,72 +38,10 @@ export async function GET(req: Request) {
         date: -1,
       }),
     {
-      successMap: (data) => {
-        const startOfMonth = moment().startOf("month");
-
-        let expenseCategoriesMap = {};
-        data = data.filter((t) => t.date >= startOfMonth);
-        data.forEach(
-          (t) =>
-            (expenseCategoriesMap[t.category] =
-              (+expenseCategoriesMap[t.category] || 0) + +t.amount)
-        );
-        let expenseCategories = Object.keys(expenseCategoriesMap)
-          .sort((prev, next) =>
-            expenseCategoriesMap[prev] > expenseCategoriesMap[next] ? 1 : -1
-          )
-          .map((category) => ({
-            name: category,
-            value: Math.abs(expenseCategoriesMap[category]),
-          }));
-
-        if (expenseCategories.length > 5) {
-          expenseCategories = [
-            ...expenseCategories.slice(0, 4),
-            expenseCategories.slice(4).reduce(
-              (other, category) => {
-                return {
-                  ...other,
-                  value: other.value + category.value,
-                };
-              },
-              {
-                name: "other",
-                value: 0,
-              }
-            ),
-          ];
-        }
-
-        const weeklyExpenses =
-          data?.length &&
-          createList(4, (i) => ({
-            name: "Week " + (i + 1),
-            value: data.reduce((value, transaction) => {
-              const onThisWeek =
-                transaction.date >=
-                  moment(startOfMonth).add(i, "weeks").toDate() &&
-                transaction.date <
-                  moment(startOfMonth)
-                    .add(i + 1, "weeks")
-                    .toDate();
-
-              return value + (onThisWeek ? Math.abs(transaction.amount) : 0);
-            }, 0),
-          }));
-
-        const total = Math.abs(
-          data.reduce((amount, t) => amount + +t.amount, 0)
-        );
-
-        return {
-          currentMonth: {
-            expenseCategories,
-            weeklyExpenses,
-            total,
-          },
-        };
-      },
+      successMap: (data) => ({ 
+        ...monthlyExpenses(data, startOfMonth),
+        ...weeklyExpenses(data, startOfMonth),
+      })
     }
   );
 }
