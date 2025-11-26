@@ -3,7 +3,9 @@
 import DarkModeToggle from "@/components/sidebar/dark-mode-toggle";
 import Logo from "@/components/sidebar/logo";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContentWithoutClose } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
+// FIXME: fix refs issue
+import { DialogContent, DialogTitle } from "@/components/ui/dialog-with-refs";
 
 import { UserButton } from "@clerk/nextjs";
 
@@ -48,12 +50,16 @@ function SidebarMobile() {
           className={cn("py-2", sidebarIconVariant)}
         ></DarkModeToggle>
         <div>
-          <UserButton afterSignOutUrl="/"></UserButton>
+          <UserButton></UserButton>
         </div>
       </div>
 
       <Dialog open={isOpen} onOpenChange={onToggle}>
-        <DialogContentWithoutClose className="sidebar-mobile-dialog bg-sidebar border-sidebar top-[50vh] max-w-[240px] left-[120px] h-screen p-0">
+        <DialogContent 
+          className="sidebar-mobile-dialog bg-sidebar border-sidebar top-[50vh] sm:max-w-[240px] max-w-[240px] left-[120px] h-screen p-0"
+          showCloseButton={false}
+        >
+          <DialogTitle className="sr-only">Mobile Navigation</DialogTitle>
           <div className="container p-2 flex flex-col gap-2">
             <NavigationLinksMenu
               isOpen={isOpen}
@@ -61,7 +67,7 @@ function SidebarMobile() {
               onLinkClick={onToggle}
             />
           </div>
-        </DialogContentWithoutClose>
+        </DialogContent>
       </Dialog>
     </>
   );
