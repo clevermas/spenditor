@@ -33,7 +33,7 @@ export function EditTransactionModal() {
   );
 
   const isPending = mutationResult.status === "pending";
-  const isChanged = !isEqual(form.formState?.defaultValues, form.getValues());
+  const isChanged = !isEqual(form.formState?.defaultValues, form.watch());
 
   function setFormInitialData(formData) {
     const transaction = formData as TransactionClass;

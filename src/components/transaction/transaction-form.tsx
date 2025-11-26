@@ -5,21 +5,26 @@ import * as z from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
 import {
+  Controller,
   FieldValues,
   SubmitHandler,
   useForm,
-  UseFormReturn,
+  UseFormReturn
 } from "react-hook-form";
 
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
+
+import {
+  Field,
+  FieldError,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -92,175 +97,197 @@ type TransactionFormProps<TFormValues extends FieldValues> = {
   onSubmit: SubmitHandler<TFormValues>;
 };
 
-export function TransactionForm({
+export function TransactionForm<TFormValues extends FieldValues>({
   form,
   onSubmit,
-}: TransactionFormProps<z.infer<typeof formSchema>>) {
-  const transactionType = form.getValues("type");
-  const isExpense = form.getValues("type") === TransactionTypesEnum.Expense;
-
-  const onDateChange = (date: Date | null, field: { onChange: (value: Date | null) => void }) => {
-    const newDate = moment.utc(moment(date).format("YYYY-MM-DD")).toDate();
-    field.onChange(newDate);
-  }
-
+}: TransactionFormProps<TFormValues>) {
   return (
-    <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-col-1 gap-4"
+        className="grid grid-col-1 gap-2"
       >
-        <FormField
+        <Controller
           control={form.control}
           name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Transaction type</FormLabel>
-              <FormControl>
-                <Select
-                  placeholder="Type"
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="income">Income</SelectItem>
-                    <SelectItem value="expense">Expense</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>Type</FieldLabel>
+              <TypeField field={field} form={form} />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
           )}
         />
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Category</FormLabel>
-              <FormControl>
-                <Select
-                  placeholder="Category"
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(isExpense
-                      ? ExpenseCategoriesList
-                      : IncomeCategoriesList
-                    ).map((category) => (
-                      <SelectItem key={category} value={category}>
-                        <TransactionCategory
-                          type={transactionType}
-                          category={category}
-                        ></TransactionCategory>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <fieldset className="grid grid-cols-2 gap-2">
-          <FormField
+        
+        <FieldSet className="grid grid-cols-2 gap-2">
+          <Controller
             control={form.control}
             name="date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Transaction Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full font-normal mt-2",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          moment.utc(field.value).format("DD/MM/YYYY")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto p-0"
-                    align="start"
-                    side="bottom"
-                  >
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={(date) => onDateChange(date, field)}
-                      disabled={(date) =>
-                        date > new Date() || date < new Date("1900-01-01")
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel>Transaction Date</FieldLabel>
+                <DateField field={field} />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
             )}
           />
 
-          <FormField
+          <Controller
             control={form.control}
             name="amount"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Amount</FormLabel>
-                <FormControl>
-                  <Input placeholder="Amount" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel>Amount</FieldLabel>
+                <Input placeholder="Amount" {...field} aria-invalid={fieldState.invalid} />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
             )}
           />
-        </fieldset>
-        <FormField
+        </FieldSet>
+
+        <Controller
+          control={form.control}
+          name="category"
+          render={({ field, fieldState }) => {
+            return (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel>Category</FieldLabel>
+                <CategoryField field={field} form={form} />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )
+          }}
+        />
+
+        <Controller
           control={form.control}
           name="tags"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tags</FormLabel>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>Tags</FieldLabel>
               <InputChip chips={field.value} onChipsChange={field.onChange}>
-                <FormControl>
-                  <InputChipControl placeholder="Enter tag" />
-                </FormControl>
+                <InputChipControl placeholder="Enter tag" />
                 <InputChipList></InputChipList>
               </InputChip>
-              <FormMessage />
-            </FormItem>
+              <FieldError errors={[fieldState.error]} />
+            </Field>
           )}
         />
 
-        <FormField
+        <Controller
           control={form.control}
           name="comment"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Comment</FormLabel>
-              <FormControl>
-                <Input placeholder="Comment" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel>Comment</FieldLabel>
+              <Input placeholder="Comment" {...field} aria-invalid={fieldState.invalid} />
+              <FieldError errors={[fieldState.error]} />
+            </Field>
           )}
         />
       </form>
-    </Form>
   );
+}
+
+const TypeField = ({ field, form }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "type">, form: UseFormReturn<z.infer<typeof formSchema>> }) => {
+  const onTypeChange = (value: string, field: { onChange: (value: string) => void }) => {
+    const isExpense = value === TransactionTypesEnum.Expense;
+    const category = isExpense ? ExpenseCategoriesList[0] : IncomeCategoriesList[0];
+
+    form.resetField("category", { defaultValue: category});
+    field.onChange(value);
+  }
+
+  return (
+    <RadioGroup
+      onValueChange={(value) => onTypeChange(value, field)}
+      value={field.value}
+      className="grid grid-cols-2 gap-2"
+    >
+        <FieldLabel className="flex items-center space-x-2"><RadioGroupItem value="income" aria-invalid={field.invalid}/> <span className="text-muted-foreground">Income</span></FieldLabel>
+        <FieldLabel className="flex items-center space-x-2"><RadioGroupItem value="expense" aria-invalid={field.invalid}/> <span className="text-muted-foreground">Expense</span></FieldLabel>
+    </RadioGroup>
+  )
+}
+
+const DateField = ({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "date"> }) => {
+  const [open, setOpen] = useState(false);
+
+  const onDateChange = (date: Date | undefined, field: { onChange: (value: Date) => void }) => {
+    const newDate = moment.utc(moment(date).format("YYYY-MM-DD")).toDate();
+    field.onChange(newDate);
+    setOpen(false);
+  }
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant={"outline"}
+          className={cn(
+            "w-full",
+            !field.value && "text-muted-foreground"
+          )}
+          aria-invalid={field.invalid}
+        >
+          {field.value ? (
+            moment.utc(field.value).format("YYYY-MM-DD")
+          ) : (
+            <span>Pick a date</span>
+          )}
+          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-auto overflow-hidden p-0"
+      >
+        <Calendar
+          mode="single"
+          selected={field.value}
+          onSelect={(date) => onDateChange(date, field)}
+          disabled={[
+            { after: new Date() },
+            { before: new Date("1900-01-01") },
+          ]}
+          captionLayout="dropdown"
+        />
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+const CategoryField = ({ field, form }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "category">, form: UseFormReturn<z.infer<typeof formSchema>> }) => {
+  const transactionType = form.watch("type");
+  const isExpense = transactionType === TransactionTypesEnum.Expense;
+
+  const onCategoryChange = (value: string, field: { onChange: (value: string) => void }) => {
+    // FIXME: investigate why '' is popped up
+    if (value !== '') {
+      field.onChange(value);
+    }
+  }
+
+  return (
+    <Select
+      onValueChange={(value) => onCategoryChange(value, field)}
+      value={field.value}
+    >
+      <SelectTrigger className="w-full" aria-invalid={field.invalid}>
+        <SelectValue placeholder="Type" />
+      </SelectTrigger>
+      <SelectContent className="max-h-48 overflow-y-auto">
+        {(isExpense
+          ? ExpenseCategoriesList
+          : IncomeCategoriesList
+        ).map((category) => (
+          <SelectItem key={category} value={category}>
+            <TransactionCategory
+              type={transactionType}
+              category={category}
+              className="text-sm"
+            ></TransactionCategory>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )
 }

@@ -32,7 +32,7 @@ export function AddTransactionModal() {
   );
 
   const isPending = mutationResult.status === "pending";
-  const isChanged = !isEqual(form.formState?.defaultValues, form.getValues());
+  const isChanged = !isEqual(form.formState?.defaultValues, form.watch());
 
   function onClose() {
     mutationResult?.reset();
