@@ -18,11 +18,11 @@ import {
 } from "@/components/ui/chart";
 
 const COLORS = [
-  "#7d86ff",
-  "#625fff",
-  "#4f3af7",
-  "#432dd7",
   "#3729ac",
+  "#432dd7",
+  "#4f3af7",
+  "#625fff",
+  "#7d86ff",
 ];
 
 const CustomLegendIcon = ({ color }: { color: string }) => (
@@ -129,7 +129,7 @@ export function ExpensesPieChart({
         />
         <ChartLegend
           content={<ChartLegendContent nameKey="category" />}
-          className="translate-y-2.5 flex-wrap gap-2 *:basis-1/4 *:justify-center text-base"
+          className="translate-y-2.5 flex-wrap gap-2 *:basis-1/4 *:justify-center text-sm"
         />
       </PieChart>
     </ChartContainer>

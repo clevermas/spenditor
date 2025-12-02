@@ -8,7 +8,9 @@ import { cn } from "@/lib/utils"
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
-  DialogPrimitive.DialogContentProps
+  React.ComponentProps<typeof DialogPrimitive.Content> & {
+    showCloseButton?: boolean
+  }
 >(({ className, children, showCloseButton = true, ...props }, ref) => (
   <DialogPrimitive.Portal>
     <DialogPrimitive.DialogOverlay />

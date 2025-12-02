@@ -1,7 +1,8 @@
 import moment, { Moment } from "moment";
 import { TransactionTypesEnum } from "@/lib/transaction/transaction";
+import { TransactionClass } from "@/db/transaction";
 
-interface WeekData {
+export interface WeekData {
   weekStartDate: Moment;
   weekEndDate: Moment;
   isFullWeek: boolean;
@@ -48,7 +49,14 @@ export function getWeeksOfMonth(startOfMonth: Moment | string): WeekData[] {
   return weeks;
 }
 
-export function weeklyExpenses(data: any[], startOfMonth: Moment | string) {
+export type WeeklyExpensesData = {
+  weekStartDate: string;
+  weekEndDate: string;
+  isFullWeek: boolean;
+  expenses: number;
+}
+
+export function weeklyExpenses(data: TransactionClass[], startOfMonth: Moment | string): { weeklyExpenses: WeeklyExpensesData[] } {
   startOfMonth = moment.utc(startOfMonth);
 
   const endOfMonth = moment(startOfMonth).endOf('month');
@@ -70,7 +78,7 @@ export function weeklyExpenses(data: any[], startOfMonth: Moment | string) {
             const onThisWeek =
               date.isSameOrAfter(weekStartDate) &&
               date.isSameOrBefore(weekEndDate);
-            return value + (onThisWeek ? Math.abs(transaction.amount) : 0);
+            return value + (onThisWeek ? Math.abs(+transaction.amount) : 0);
           }, 0),
         };
     })

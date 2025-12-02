@@ -294,7 +294,7 @@ const ChartLegendContent = React.forwardRef<
             const itemConfig = getPayloadConfigFromPayload(config, item, key)
             return (
               <div
-                key={item.name}
+                key={item.value}
                 className={cn(
                   "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
                 )}

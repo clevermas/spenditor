@@ -1,6 +1,7 @@
 "use client"
 
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { useMemo } from "react";
 
 import {
   ChartConfig,
@@ -9,14 +10,13 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { Amount } from "@/components/amount"
-
-import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NoResults } from "@/components/no-results";
-import { ListItem } from "@/lib/utils";
+
+import { WeeklyExpensesData } from "@/lib/statistics/weekly-expenses";
 
 interface WeeklyExpensesChartProps {
-  data: ListItem[];
+  data: WeeklyExpensesData[];
   currency: string;
   loading?: boolean;
 }

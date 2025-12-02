@@ -1,23 +1,16 @@
 "use client";
 
-import moment from "moment";
 import * as z from "zod";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon } from "lucide-react";
-import { useState } from "react";
 import {
   Controller,
-  FieldValues,
+  ControllerFieldState,
+  ControllerRenderProps,
   SubmitHandler,
   useForm,
   UseFormReturn
 } from "react-hook-form";
-
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/components/ui/radio-group";
 
 import {
   Field,
@@ -25,40 +18,16 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
-
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-import { TransactionCategory } from "@/components/transaction/transaction-category";
-
-import { cn } from "@/lib/utils";
-
 import {
   InputChip,
   InputChipControl,
   InputChipList,
 } from "@/components/ui/input-chip";
 
-import { TransactionTypesEnum } from "@/lib/transaction/transaction";
-import {
-  ExpenseCategoriesList,
-  IncomeCategoriesList,
-} from "@/lib/transaction/transaction-categories";
 import { validateTransactionForm } from "@/lib/transaction/transaction-validation";
+
+import { TypeField, DateField, CategoryField } from "./fields";
 
 export const formSchema = z
   .object({
@@ -77,6 +46,8 @@ export const formSchema = z
   })
   .superRefine(validateTransactionForm as (transaction: any, ctx: any) => void);
 
+export type TransactionFormValues = z.infer<typeof formSchema>;
+
 export const useTransactionForm = () => {
   const defaultValues = {
     type: "expense",
@@ -84,7 +55,7 @@ export const useTransactionForm = () => {
     tags: [],
     amount: "",
   };
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<TransactionFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
   });
@@ -92,15 +63,14 @@ export const useTransactionForm = () => {
   return { form };
 };
 
-type TransactionFormProps<TFormValues extends FieldValues> = {
-  form: UseFormReturn<TFormValues>;
-  onSubmit: SubmitHandler<TFormValues>;
+interface TransactionFormProps {
+  form: UseFormReturn<TransactionFormValues>;
+  onSubmit: SubmitHandler<TransactionFormValues>;
 };
-
-export function TransactionForm<TFormValues extends FieldValues>({
+export function TransactionForm({
   form,
   onSubmit,
-}: TransactionFormProps<TFormValues>) {
+}: TransactionFormProps) {
   return (
       <form
         onSubmit={form.handleSubmit(onSubmit)}
@@ -112,7 +82,7 @@ export function TransactionForm<TFormValues extends FieldValues>({
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>Type</FieldLabel>
-              <TypeField field={field} form={form} />
+              <TypeField field={field} fieldState={fieldState} form={form} />
               <FieldError errors={[fieldState.error]} />
             </Field>
           )}
@@ -125,7 +95,7 @@ export function TransactionForm<TFormValues extends FieldValues>({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Transaction Date</FieldLabel>
-                <DateField field={field} />
+                <DateField field={field} fieldState={fieldState} />
                 <FieldError errors={[fieldState.error]} />
               </Field>
             )}
@@ -151,7 +121,7 @@ export function TransactionForm<TFormValues extends FieldValues>({
             return (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Category</FieldLabel>
-                <CategoryField field={field} form={form} />
+                <CategoryField field={field} fieldState={fieldState} form={form} />
                 <FieldError errors={[fieldState.error]} />
               </Field>
             )
@@ -164,7 +134,7 @@ export function TransactionForm<TFormValues extends FieldValues>({
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>Tags</FieldLabel>
-              <InputChip chips={field.value} onChipsChange={field.onChange}>
+              <InputChip chips={field.value || []} onChipsChange={field.onChange}>
                 <InputChipControl placeholder="Enter tag" />
                 <InputChipList></InputChipList>
               </InputChip>
@@ -186,108 +156,4 @@ export function TransactionForm<TFormValues extends FieldValues>({
         />
       </form>
   );
-}
-
-const TypeField = ({ field, form }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "type">, form: UseFormReturn<z.infer<typeof formSchema>> }) => {
-  const onTypeChange = (value: string, field: { onChange: (value: string) => void }) => {
-    const isExpense = value === TransactionTypesEnum.Expense;
-    const category = isExpense ? ExpenseCategoriesList[0] : IncomeCategoriesList[0];
-
-    form.resetField("category", { defaultValue: category});
-    field.onChange(value);
-  }
-
-  return (
-    <RadioGroup
-      onValueChange={(value) => onTypeChange(value, field)}
-      value={field.value}
-      className="grid grid-cols-2 gap-2"
-    >
-        <FieldLabel className="flex items-center space-x-2"><RadioGroupItem value="income" aria-invalid={field.invalid}/> <span className="text-muted-foreground">Income</span></FieldLabel>
-        <FieldLabel className="flex items-center space-x-2"><RadioGroupItem value="expense" aria-invalid={field.invalid}/> <span className="text-muted-foreground">Expense</span></FieldLabel>
-    </RadioGroup>
-  )
-}
-
-const DateField = ({ field }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "date"> }) => {
-  const [open, setOpen] = useState(false);
-
-  const onDateChange = (date: Date | undefined, field: { onChange: (value: Date) => void }) => {
-    const newDate = moment.utc(moment(date).format("YYYY-MM-DD")).toDate();
-    field.onChange(newDate);
-    setOpen(false);
-  }
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant={"outline"}
-          className={cn(
-            "w-full",
-            !field.value && "text-muted-foreground"
-          )}
-          aria-invalid={field.invalid}
-        >
-          {field.value ? (
-            moment.utc(field.value).format("YYYY-MM-DD")
-          ) : (
-            <span>Pick a date</span>
-          )}
-          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        className="w-auto overflow-hidden p-0"
-      >
-        <Calendar
-          mode="single"
-          selected={field.value}
-          onSelect={(date) => onDateChange(date, field)}
-          disabled={[
-            { after: new Date() },
-            { before: new Date("1900-01-01") },
-          ]}
-          captionLayout="dropdown"
-        />
-      </PopoverContent>
-    </Popover>
-  )
-}
-
-const CategoryField = ({ field, form }: { field: ControllerRenderProps<z.infer<typeof formSchema>, "category">, form: UseFormReturn<z.infer<typeof formSchema>> }) => {
-  const transactionType = form.watch("type");
-  const isExpense = transactionType === TransactionTypesEnum.Expense;
-
-  const onCategoryChange = (value: string, field: { onChange: (value: string) => void }) => {
-    // FIXME: investigate why '' is popped up
-    if (value !== '') {
-      field.onChange(value);
-    }
-  }
-
-  return (
-    <Select
-      onValueChange={(value) => onCategoryChange(value, field)}
-      value={field.value}
-    >
-      <SelectTrigger className="w-full" aria-invalid={field.invalid}>
-        <SelectValue placeholder="Type" />
-      </SelectTrigger>
-      <SelectContent className="max-h-48 overflow-y-auto">
-        {(isExpense
-          ? ExpenseCategoriesList
-          : IncomeCategoriesList
-        ).map((category) => (
-          <SelectItem key={category} value={category}>
-            <TransactionCategory
-              type={transactionType}
-              category={category}
-              className="text-sm"
-            ></TransactionCategory>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )
 }

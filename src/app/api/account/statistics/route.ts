@@ -8,6 +8,7 @@ import { TransactionTypesEnum } from "@/lib/transaction/transaction";
 import { ListItem } from "@/lib/utils";
 
 import { Transaction } from "@/db/transaction";
+import { AccountClass } from "@/db/account";
 
 export interface StatisticsResponseDTO {
   currentMonth: {
@@ -18,7 +19,7 @@ export interface StatisticsResponseDTO {
 }
 
 export async function GET(req: Request) {
-  const account = await currentAccount();
+  let account = (await currentAccount()) as AccountClass;
 
   if (account instanceof NextResponse) {
     return account;
