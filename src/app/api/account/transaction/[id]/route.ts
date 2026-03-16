@@ -7,10 +7,8 @@ import { currentAccount } from "@/lib/current-account";
 import { handleMongoDbQuery } from "@/lib/error-handling";
 import { validateTransaction } from "@/lib/transaction/transaction-validation";
 
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   let transaction = (await req.json()) as TransactionClass;
 
   const account = (await currentAccount()) as AccountClass;
@@ -56,10 +54,8 @@ export async function PUT(
   );
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(req: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const account = (await currentAccount()) as AccountClass;
   if (account instanceof NextResponse) {
     return account;
