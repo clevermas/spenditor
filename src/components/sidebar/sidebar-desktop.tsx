@@ -50,7 +50,7 @@ function SidebarDesktop({ isOpen, onToggle }) {
         ></DarkModeToggle>
       </div>
       <div className="hidden lg:flex w-full p-2 justify-center">
-        <UserButton afterSignOutUrl="/"></UserButton>
+        <UserButton></UserButton>
       </div>
 
       <div className="hidden lg:flex flex-col gap-2 p-2">

@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 import { Profile, ProfileClass } from "@/db/profile";
@@ -10,7 +10,7 @@ export const currentProfile = async (): Promise<
 > => {
   let profile: ProfileClass;
 
-  const { userId } = auth();
+  const { userId } = await auth();
 
   await connectDB();
 

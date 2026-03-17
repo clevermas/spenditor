@@ -2,6 +2,6 @@ export const noResultsText = "No results.";
 
 export function NoResults() {
   return (
-    <div className="h-24 flex justify-center items-center">{noResultsText}</div>
+    <div className="h-24 flex justify-center items-center text-base text-muted-foreground">{noResultsText}</div>
   );
 }

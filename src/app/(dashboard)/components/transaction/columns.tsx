@@ -4,10 +4,11 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Amount } from "@/components/amount";
 import { TransactionCategory } from "@/components/transaction/transaction-category";
-import { Badge } from "@/components/ui/badge";
 
 import { TransactionClass } from "@/db/transaction";
 import { FlattenTransactionsRow } from "@/lib/transaction/transaction";
+import { cn } from "@/lib/utils";
+
 import { DataTableActions } from "./data-table-actions";
 
 export const columns: ColumnDef<FlattenTransactionsRow>[] = [
@@ -21,22 +22,24 @@ export const columns: ColumnDef<FlattenTransactionsRow>[] = [
         <TransactionCategory
           category={category}
           type={type}
+          className="text-muted-foreground"
         ></TransactionCategory>
       );
     },
   },
   {
-    accessorKey: "tags",
-    header: "Tags",
+    accessorKey: "comment",
+    header: "Comment",
     cell: ({ row }) => {
-      const tags = row.getValue("tags") as string[];
+      const transaction = row.original as TransactionClass;
+      const contentLength = transaction.comment?.length;
+      const categoryLength = transaction.category?.length;
       return (
-        <div className="space-x-2">
-          {tags.map((tag) => (
-            <Badge key={tag} className="font-light">
-              {tag.toUpperCase()}
-            </Badge>
-          ))}
+        <div className={
+          cn("text-muted-foreground text-base text-ellipsis text-center whitespace-nowrap overflow-hidden",
+              (contentLength <= 34 && categoryLength < 10) || (contentLength < 27 && categoryLength > 10) ? '-ml-[71px]' : ""
+        )}>
+         {transaction.comment}
         </div>
       );
     },
