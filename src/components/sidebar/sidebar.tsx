@@ -24,8 +24,8 @@ function Sidebar() {
   return (
     <aside
       className={cn(
-        "z-[50] fixed left-0 top-0 bg-sidebar",
-        "dark:border-r-[1px]",
+        "z-50 fixed left-0 top-0 bg-sidebar",
+        "dark:border-r",
         "lg:block lg:h-screen",
         "h-12 w-screen",
         isOpen ? "lg:w-[240px]" : "lg:w-[56px]"

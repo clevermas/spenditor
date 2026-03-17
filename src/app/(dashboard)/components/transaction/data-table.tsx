@@ -49,8 +49,8 @@ export const DataTable = memo<DataTableProps<FlattenTransactionsRow>>(
                   className={
                     "group grid gap-0 md:gap-2 items-center py-1 sm:py-0 md:h-11 " +
                     (readonly
-                      ? "grid-cols-[minmax(58%,_1fr)_30%] md:grid-cols-[minmax(270px,30%)_minmax(120px,1fr)_100px]"
-                      : "grid-cols-[minmax(58%,_1fr)_30%_16px] md:grid-cols-[200px_minmax(120px,1fr)_100px_25px]" 
+                      ? "grid-cols-[minmax(58%,1fr)_30%] md:grid-cols-[minmax(270px,30%)_minmax(120px,1fr)_100px]"
+                      : "grid-cols-[minmax(58%,1fr)_30%_16px] md:grid-cols-[200px_minmax(120px,1fr)_100px_25px]" 
                     )
                   }
                 >

@@ -16,8 +16,8 @@ function SidebarDesktop({ isOpen, onToggle }) {
   return (
     <div
       className={cn(
-        "z-[50] fixed left-0 top-0 bg-sidebar",
-        "dark:border-r-[1px]",
+        "z-50 fixed left-0 top-0 bg-sidebar",
+        "dark:border-r",
         "hidden lg:block lg:h-screen",
         "h-12 w-screen",
         isOpen ? "lg:w-[240px]" : "lg:w-[56px]"
@@ -26,7 +26,7 @@ function SidebarDesktop({ isOpen, onToggle }) {
       <div
         className={cn(
           "hidden lg:flex items-center pt-2 px-2",
-          isOpen ? "space-x-2 h-12" : "ml-[1px] flex-col space-y-1"
+          isOpen ? "space-x-2 h-12" : "ml-px flex-col space-y-1"
         )}
       >
         <Button

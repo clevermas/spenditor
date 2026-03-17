@@ -5,9 +5,6 @@ import {
 } from "react-hook-form";
 
 import {
-  FieldLabel,
-} from "@/components/ui/field";
-import {
   RadioGroup,
   RadioGroupItem,
 } from "@/components/ui/radio-group";
@@ -19,6 +16,7 @@ import {
 } from "@/lib/transaction/transaction-categories";
 
 import { TransactionFormValues } from "@/components/transaction/transaction-form";
+import { Label } from "@/components/ui/label";
 
 interface TypeFieldProps {
   field: ControllerRenderProps<TransactionFormValues, "type">,
@@ -40,14 +38,14 @@ export const TypeField = ({ field, fieldState, form }: TypeFieldProps) => {
       value={field.value}
       className="grid grid-cols-2 gap-2"
     >
-        <FieldLabel className="flex items-center space-x-2">
-          <RadioGroupItem value="income" aria-invalid={fieldState.invalid}/> 
-          <span className="text-muted-foreground">Income</span>
-        </FieldLabel>
-        <FieldLabel className="flex items-center space-x-2">
-          <RadioGroupItem value="expense" aria-invalid={fieldState.invalid}/>
-          <span className="text-muted-foreground">Expense</span>
-        </FieldLabel>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem id="type-income" value="income" aria-invalid={fieldState.invalid}/> 
+          <Label htmlFor="type-income" className="text-muted-foreground">Income</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem id="type-expense" value="expense" aria-invalid={fieldState.invalid}/>
+          <Label htmlFor="type-expense" className="text-muted-foreground">Expense</Label>
+        </div>
     </RadioGroup>
   )
 }
