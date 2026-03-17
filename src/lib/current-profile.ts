@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 import { Profile, ProfileClass } from "@/db/profile";
-import connectDB from "@/lib/db";
+import { connectDB } from "@/lib/db";
 import { throwError } from "./error-handling";
 
 export const currentProfile = async (): Promise<
@@ -10,12 +10,14 @@ export const currentProfile = async (): Promise<
 > => {
   let profile: ProfileClass;
 
-  const { userId } = await auth();
+  const { isAuthenticated, userId } = await auth();
 
-  await connectDB();
+  if (!isAuthenticated) {
+    return throwError(["Aunauthorized", "Aunauthorized"], 401);
+  }
 
-  if (!userId) {
-    return throwError(["Profile not found", "Profile not found"], 404);
+  if (!await connectDB()) {
+    return NextResponse.json({});
   }
 
   const existingAccount = await Profile.find({ userId });
