@@ -3,7 +3,7 @@ import type { PreloadedState } from "@reduxjs/toolkit";
 import type { RenderOptions } from "@testing-library/react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, type JSX } from "react";
 import { Provider } from "react-redux";
 import { server } from "./server";
 
@@ -17,7 +17,7 @@ interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
 }
 
 function renderWithProviders(
-  ui: React.ReactElement,
+  ui: React.ReactElement<any>,
   {
     preloadedState = {},
     store = setupStore(preloadedState),
