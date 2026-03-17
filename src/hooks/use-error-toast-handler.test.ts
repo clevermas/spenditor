@@ -1,9 +1,9 @@
 import { renderHook } from "@testing-library/react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { useErrorToastHandler } from "./use-error-toast-handler";
 
-jest.mock("@/components/ui/use-toast", () => ({
-  useToast: jest.fn(),
+jest.mock("sonner", () => ({
+  toast: { error: jest.fn() },
 }));
 
 describe("useErrorToastHandler", () => {
@@ -11,7 +11,7 @@ describe("useErrorToastHandler", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    useToast.mockReturnValue({ toast: toastMock });
+    toast.error.mockReturnValue(toastMock);
   });
 
   it("should display a toast when an error is provided", () => {

@@ -1,6 +1,6 @@
 import ModalProvider from "@/components/providers/modal-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/redux/provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
