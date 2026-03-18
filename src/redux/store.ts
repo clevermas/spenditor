@@ -1,4 +1,3 @@
-import type { PreloadedState } from "@reduxjs/toolkit";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import modalReducer from "./features/modal.slice";
 import sidebarReducer from "./features/sidebar.slice";
@@ -10,7 +9,7 @@ const rootReducer = combineReducers({
   [accountApi.reducerPath]: accountApi.reducer,
 });
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
+export const setupStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({
     reducer: rootReducer,
     devTools: process.env.NODE_ENV !== "production",

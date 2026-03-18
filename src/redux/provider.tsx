@@ -1,6 +1,6 @@
 "use client";
 
-import { setupListeners } from "@reduxjs/toolkit/dist/query";
+import { setupListeners } from "@reduxjs/toolkit/query";
 import { Provider } from "react-redux";
 import { setupStore } from "./store";
 
