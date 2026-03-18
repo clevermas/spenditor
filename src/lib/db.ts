@@ -1,5 +1,7 @@
 import _mongoose, { connect } from "mongoose";
 
+const isDev = process.env.NODE_ENV === "development";
+
 declare global {
   var mongoose: {
     promise: ReturnType<typeof connect> | null;
@@ -24,7 +26,7 @@ if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
 }
 
-async function connectDB() {
+export async function connectDB() {
   function connectPromise() {
     const opts = {
       bufferCommands: false,
@@ -32,16 +34,16 @@ async function connectDB() {
 
     return connect(MONGODB_URI!, opts)
       .then((mongoose) => {
-        console.log("✅ New connection established");
+        if (isDev) console.log("✅ New connection established");
         return mongoose;
       })
       .catch((error) => {
-        console.error("❌ Connection to database failed");
+        if (isDev) console.error("❌ Connection to database failed");
         throw error;
       });
   }
 
-  if (process.env.NODE_ENV === "development") {
+  if (isDev) {
     if (cached.conn) {
       console.log("🚀 Using cached connection");
       return cached.conn;
@@ -61,7 +63,7 @@ async function connectDB() {
     }
   } else {
     let promise;
-
+    
     try {
       promise = await connectPromise();
     } catch (e) {
@@ -70,5 +72,3 @@ async function connectDB() {
     return promise;
   }
 }
-
-export default connectDB;
