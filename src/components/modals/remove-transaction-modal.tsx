@@ -10,43 +10,37 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { useTransactionModal } from "@/hooks/use-transaction-modal";
 import {
-  close,
-  RemoveTransactionModalData,
+  RemoveTransactionModalData
 } from "@/redux/features/modal.slice";
-import { useAppDispatch } from "@/redux/hooks";
 import { useRemoveTransactionMutation } from "@/redux/services/account-api";
+import { useEffect } from "react";
 
-export function RemoveTransactionModal() {
-  const dispatch = useAppDispatch();
-
+interface RemoveTransactionModalProps {
+  data: RemoveTransactionModalData,
+  open: boolean;
+  onClose: () => void;
+}
+export function RemoveTransactionModal({ data, open, onClose }: RemoveTransactionModalProps) {
   const mutation = useRemoveTransactionMutation();
   const [mutationTrigger, mutationResult] = mutation;
 
-  const [isOpen, data] = useTransactionModal(
-    "removeTransaction",
-    mutation,
-    () => {},
-    onClose
-  );
-
   const isPending = mutationResult.status === "pending";
+  const isSuccess = mutationResult.status === "fulfilled";
 
-  function onClose() {
-    mutationResult?.reset();
-  }
-
-  function handleClose() {
-    dispatch(close());
-  }
+  useEffect(() => {
+    if (isSuccess) {
+        mutationResult.reset();
+        onClose();
+    }
+  }, [isSuccess, mutationResult]);
 
   function handleSubmit() {
-    mutationTrigger((data as RemoveTransactionModalData).transactionId);
+    mutationTrigger(data.transactionId);
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Remove transaction</DialogTitle>
@@ -56,7 +50,7 @@ export function RemoveTransactionModal() {
           transaction.
         </DialogDescription>
         <DialogFooter>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" disabled={isPending} onClick={onClose}>
             Cancel
           </Button>
           <Button type="submit" disabled={isPending} onClick={handleSubmit}>

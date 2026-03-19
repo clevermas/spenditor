@@ -12,16 +12,18 @@ import { flattenTransactions } from "@/lib/transaction/transaction";
 import { createList } from "@/lib/utils";
 
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
-import { open } from "@/redux/features/modal.slice";
 import { useAppDispatch } from "@/redux/hooks";
 import { accountApi, useAccountDataQuery } from "@/redux/services/account-api";
 
 import { DataTable } from "@/app/(dashboard)/components/transaction/data-table";
+import { AddTransactionModal } from "@/components/modals/add-transaction-modal";
 
 export default function Transactions() {
   const [currentPage, setCurrentPage] = useState(1);
   const { data, error, isSuccess, isFetching } =
     useAccountDataQuery(currentPage);
+  const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false);
+
   const dispatch = useAppDispatch();
 
   const transactions = useMemo(
@@ -46,10 +48,6 @@ export default function Transactions() {
 
   useErrorToastHandler(error);
 
-  function openAddTransactionModal() {
-    dispatch(open({ type: "addTransaction" }));
-  }
-
   function loadMore() {
     setCurrentPage((p) => p + 1);
   }
@@ -59,16 +57,20 @@ export default function Transactions() {
       <div className="flex flex-wrap flex-col sm:flex-row gap-2 w-full lg:w-[1024px] px-4 lg:px-8 py-2">
         <div className="w-full flex flex-row items-center gap-x-2">
           <h1 className="text-md leading-9">Recent transactions</h1>
-
+        
           <Button
-              disabled={isFetching}
-              onClick={openAddTransactionModal}
-              aria-label="add-transaction-button"
-              size="icon"
-              className="rounded-full w-8 h-8"
-            >
-              <Plus size={18} strokeWidth={2} />
+            disabled={isFetching}
+            onClick={() => setIsAddTransactionOpen(true)}
+            aria-label="add-transaction-button"
+            size="icon"
+            className="rounded-full w-8 h-8"
+          >
+            <Plus size={18} strokeWidth={2} />
           </Button>
+          <AddTransactionModal 
+            open={isAddTransactionOpen} 
+            onClose={() => setIsAddTransactionOpen(false)}
+          />
         </div>
 
         <Card className="w-full">

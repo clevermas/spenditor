@@ -5,13 +5,10 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Controller,
-  ControllerFieldState,
-  ControllerRenderProps,
-  SubmitHandler,
-  useForm,
-  UseFormReturn
+  useForm
 } from "react-hook-form";
 
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldError,
@@ -24,10 +21,15 @@ import {
   InputChipControl,
   InputChipList,
 } from "@/components/ui/input-chip";
+import {
+  ExpenseCategoriesList,
+  IncomeCategoriesList,
+} from "@/lib/transaction/transaction-categories";
 
 import { validateTransactionForm } from "@/lib/transaction/transaction-validation";
 
-import { TypeField, DateField, CategoryField } from "./fields";
+import { TransactionTypesEnum } from "@/lib/transaction/transaction";
+import { CategoryField, DateField, TypeField } from "./fields";
 
 export const formSchema = z
   .object({
@@ -48,41 +50,50 @@ export const formSchema = z
 
 export type TransactionFormValues = z.infer<typeof formSchema>;
 
-export const useTransactionForm = () => {
-  const defaultValues = {
-    type: "expense",
-    category: "expense",
-    tags: [],
-    amount: "",
-  };
-  const form = useForm<TransactionFormValues>({
+interface TransactionFormProps {
+  defaultValues?: TransactionFormValues,
+  isPending: boolean,
+  onSubmit: (transaction: TransactionFormValues) => void;
+};
+export function TransactionForm({ defaultValues, isPending, onSubmit }: TransactionFormProps) {
+   const form = useForm<TransactionFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues,
+    defaultValues: defaultValues ?? {
+      type: "expense",
+      category: "expense",
+      tags: [],
+      amount: "",
+    },
   });
 
-  return { form };
-};
+  const {
+    formState: { isDirty },
+    control,
+    watch,
+    handleSubmit
+  } = form;
 
-interface TransactionFormProps {
-  form: UseFormReturn<TransactionFormValues>;
-  onSubmit: SubmitHandler<TransactionFormValues>;
-};
-export function TransactionForm({
-  form,
-  onSubmit,
-}: TransactionFormProps) {
+  const type = watch("type") as TransactionTypesEnum;
+  
+  function onTypeChange(value: string) {
+    const isExpense = value === TransactionTypesEnum.Expense;
+    const category = isExpense ? ExpenseCategoriesList[0] : IncomeCategoriesList[0];
+
+    form.setValue("category", category);
+  }
+
   return (
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit)}
         className="grid grid-col-1 gap-2"
       >
         <Controller
-          control={form.control}
+          control={control}
           name="type"
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>Type</FieldLabel>
-              <TypeField field={field} fieldState={fieldState} form={form} />
+              <TypeField field={field} fieldState={fieldState} onChange={onTypeChange} />
               <FieldError errors={[fieldState.error]} />
             </Field>
           )}
@@ -90,7 +101,7 @@ export function TransactionForm({
         
         <FieldSet className="grid grid-cols-2 gap-2">
           <Controller
-            control={form.control}
+            control={control}
             name="date"
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
@@ -102,7 +113,7 @@ export function TransactionForm({
           />
 
           <Controller
-            control={form.control}
+            control={control}
             name="amount"
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
@@ -115,13 +126,13 @@ export function TransactionForm({
         </FieldSet>
 
         <Controller
-          control={form.control}
+          control={control}
           name="category"
           render={({ field, fieldState }) => {
             return (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel>Category</FieldLabel>
-                <CategoryField field={field} fieldState={fieldState} form={form} />
+                <CategoryField field={field} fieldState={fieldState} type={type} />
                 <FieldError errors={[fieldState.error]} />
               </Field>
             )
@@ -129,7 +140,7 @@ export function TransactionForm({
         />
 
         <Controller
-          control={form.control}
+          control={control}
           name="tags"
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
@@ -144,7 +155,7 @@ export function TransactionForm({
         />
 
         <Controller
-          control={form.control}
+          control={control}
           name="comment"
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
@@ -154,6 +165,13 @@ export function TransactionForm({
             </Field>
           )}
         />
+
+        <Button
+          type="submit"
+          disabled={!isDirty || isPending}
+        >
+          Save
+        </Button>
       </form>
   );
 }

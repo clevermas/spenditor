@@ -1,7 +1,6 @@
 import {
   ControllerFieldState,
-  ControllerRenderProps,
-  UseFormReturn
+  ControllerRenderProps
 } from "react-hook-form";
 
 import {
@@ -9,11 +8,6 @@ import {
   RadioGroupItem,
 } from "@/components/ui/radio-group";
 
-import { TransactionTypesEnum } from "@/lib/transaction/transaction";
-import {
-  ExpenseCategoriesList,
-  IncomeCategoriesList,
-} from "@/lib/transaction/transaction-categories";
 
 import { TransactionFormValues } from "@/components/transaction/transaction-form";
 import { Label } from "@/components/ui/label";
@@ -21,15 +15,12 @@ import { Label } from "@/components/ui/label";
 interface TypeFieldProps {
   field: ControllerRenderProps<TransactionFormValues, "type">,
   fieldState: ControllerFieldState,
-  form: UseFormReturn<TransactionFormValues>
+  onChange: (value: string) => void
 }
-export const TypeField = ({ field, fieldState, form }: TypeFieldProps) => {
+export const TypeField = ({ field, fieldState, onChange }: TypeFieldProps) => {
   const onTypeChange = (value: string, field: { onChange: (value: string) => void }) => {
-    const isExpense = value === TransactionTypesEnum.Expense;
-    const category = isExpense ? ExpenseCategoriesList[0] : IncomeCategoriesList[0];
-
-    form.setValue("category", category);
     field.onChange(value);
+    onChange(value);
   }
 
   return (
