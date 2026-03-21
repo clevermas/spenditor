@@ -1,5 +1,4 @@
 import { AppStore, RootState, setupStore } from "@/redux/store";
-import type { PreloadedState } from "@reduxjs/toolkit";
 import type { RenderOptions } from "@testing-library/react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
@@ -12,7 +11,7 @@ import { server } from "./server";
 // future dependencies, such as wanting to test with react-router, you can extend
 // this interface to accept a path and route and use those in a <MemoryRouter />
 interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
-  preloadedState?: PreloadedState<RootState>;
+  preloadedState?: Partial<RootState>;
   store?: AppStore;
 }
 
@@ -194,10 +193,8 @@ function defaultMutationTestCases([
 }
 
 export {
-  renderWithProviders,
-  setWrapper,
-  mockResponseErrorHandler,
-  mockResponseHandler,
-  defaultQueryTestCases,
-  defaultMutationTestCases,
+  defaultMutationTestCases, defaultQueryTestCases, mockResponseErrorHandler,
+  mockResponseHandler, renderWithProviders,
+  setWrapper
 };
+

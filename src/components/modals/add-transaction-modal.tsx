@@ -1,48 +1,37 @@
 "use client";
 
-import { useAppDispatch } from "@/redux/hooks";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from "@/components/ui/dialog";
 
-import { TransactionForm, useTransactionForm } from "@/components/transaction/transaction-form";
+import { TransactionForm } from "@/components/transaction/transaction-form";
 import { TransactionClass } from "@/db/transaction";
-import { useTransactionModal } from "@/hooks/use-transaction-modal";
-import { isEqual } from "@/lib/utils";
-import { close } from "@/redux/features/modal.slice";
+
 import { useAddTransactionMutation } from "@/redux/services/account-api";
+import { useEffect } from "react";
 
-export function AddTransactionModal() {
-  const { form } = useTransactionForm();
-  const dispatch = useAppDispatch();
-
+interface AddTransactionModalProps {
+  open: boolean;
+  onClose: () => void;
+}
+export function AddTransactionModal({ open, onClose }: AddTransactionModalProps) {
   const mutation = useAddTransactionMutation();
   const [mutationTrigger, mutationResult] = mutation;
-  const [isOpen] = useTransactionModal(
-    "addTransaction",
-    mutation,
-    () => {},
-    onClose
-  );
-
+  
   const isPending = mutationResult.status === "pending";
-  const isChanged = !isEqual(form.formState?.defaultValues, form.watch());
+  const isSuccess = mutationResult.status === "fulfilled";
 
-  function onClose() {
-    mutationResult?.reset();
-    form.reset();
-  }
-
-  function handleClose() {
-    dispatch(close());
-  }
-
+  useEffect(() => {
+      if (isSuccess) {
+          mutationResult.reset();
+          onClose();
+      }
+  }, [isSuccess, mutationResult]);
+  
   function handleSubmit(
     transaction: Partial<TransactionClass | { tags: string[] }>
   ) {
@@ -50,21 +39,12 @@ export function AddTransactionModal() {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add transaction</DialogTitle>
         </DialogHeader>
-        <TransactionForm form={form} onSubmit={handleSubmit}></TransactionForm>
-        <DialogFooter>
-          <Button
-            type="submit"
-            disabled={!isChanged || isPending}
-            onClick={form.handleSubmit(handleSubmit)}
-          >
-            Save
-          </Button>
-        </DialogFooter>
+        <TransactionForm isPending={isPending} onSubmit={handleSubmit} />
       </DialogContent>
     </Dialog>
   );

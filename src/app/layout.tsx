@@ -1,4 +1,3 @@
-import ModalProvider from "@/components/providers/modal-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/redux/provider";
@@ -33,7 +32,7 @@ export default function RootLayout({
         >
           <ClerkProvider>
             <Providers>
-              <ModalProvider>{children}</ModalProvider>
+              {children}
             </Providers>
           </ClerkProvider>
         </ThemeProvider>

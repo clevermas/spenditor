@@ -1,7 +1,6 @@
 import {
   ControllerFieldState,
-  ControllerRenderProps,
-  UseFormReturn,
+  ControllerRenderProps
 } from "react-hook-form";
 
 import {
@@ -18,17 +17,16 @@ import {
   IncomeCategoriesList,
 } from "@/lib/transaction/transaction-categories";
 
-import { TransactionFormValues } from "@/components/transaction/transaction-form";
 import { TransactionCategory } from "@/components/transaction/transaction-category";
+import { TransactionFormValues } from "@/components/transaction/transaction-form";
 
 interface CategoryFieldProps {
   field: ControllerRenderProps<TransactionFormValues, "category">,
   fieldState: ControllerFieldState,
-  form: UseFormReturn<TransactionFormValues>,
+  type: TransactionTypesEnum
 } 
-export const CategoryField = ({ field, fieldState, form }: CategoryFieldProps) => {
-  const transactionType = form.watch("type");
-  const isExpense = transactionType === TransactionTypesEnum.Expense;
+export const CategoryField = ({ field, fieldState, type }: CategoryFieldProps) => {
+  const isExpense = type === TransactionTypesEnum.Expense;
 
   const onCategoryChange = (value: string, field: { onChange: (value: string) => void }) => {
     // FIXME: investigate why '' is popped up
@@ -52,7 +50,7 @@ export const CategoryField = ({ field, fieldState, form }: CategoryFieldProps) =
         ).map((category) => (
           <SelectItem key={category} value={category}>
             <TransactionCategory
-              type={transactionType}
+              type={type}
               category={category}
               className="text-sm"
             ></TransactionCategory>

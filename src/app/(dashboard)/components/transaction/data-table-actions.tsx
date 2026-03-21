@@ -1,3 +1,5 @@
+import { EditTransactionModal } from "@/components/modals/edit-transaction-modal";
+import { RemoveTransactionModal } from "@/components/modals/remove-transaction-modal";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -6,22 +8,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { TransactionClass } from "@/db/transaction";
-import { open } from "@/redux/features/modal.slice";
-import { useAppDispatch } from "@/redux/hooks";
 import { MoreVertical } from "lucide-react";
+import { useState } from "react";
 
 export function DataTableActions({ data }: { data: TransactionClass }) {
-  const dispatch = useAppDispatch();
-
-  function openEditTransactionModal() {
-    dispatch(open({ type: "editTransaction", data }));
-  }
-
-  function openRemoveTransactionModal() {
-    dispatch(
-      open({ type: "removeTransaction", data: { transactionId: data?._id } })
-    );
-  }
+  const [isEditTransactionOpen, setIsEditTransactionOpen] = useState(false);
+  const [isRemoveTransactionOpen, setIsRemoveTransactionOpen] = useState(false);
 
   return (
     <div>
@@ -32,14 +24,26 @@ export function DataTableActions({ data }: { data: TransactionClass }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={openEditTransactionModal}>
+          <DropdownMenuItem onClick={() => setIsEditTransactionOpen(true)}>
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={openRemoveTransactionModal}>
+          <DropdownMenuItem onClick={() => setIsRemoveTransactionOpen(true)}>
             Remove
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      
+      <EditTransactionModal 
+        data={data} 
+        open={isEditTransactionOpen}
+        onClose={() => setIsEditTransactionOpen(false)}
+      />
+      
+      <RemoveTransactionModal
+        data={{ transactionId: data?._id ?? '' }} 
+        open={isRemoveTransactionOpen}
+        onClose={() => setIsRemoveTransactionOpen(false)}
+      />
     </div>
   );
 }

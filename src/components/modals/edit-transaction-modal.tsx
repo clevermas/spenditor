@@ -1,63 +1,49 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from "@/components/ui/dialog";
 import { TransactionClass } from "@/db/transaction";
-import { useTransactionModal } from "@/hooks/use-transaction-modal";
-import { isEqual } from "@/lib/utils";
-import { close } from "@/redux/features/modal.slice";
-import { useAppDispatch } from "@/redux/hooks";
 import { useUpdateTransactionMutation } from "@/redux/services/account-api";
+import { useEffect } from "react";
 import {
-  TransactionForm,
-  useTransactionForm,
+  TransactionForm
 } from "../transaction/transaction-form";
 
-export function EditTransactionModal() {
-  const { form } = useTransactionForm();
-  const dispatch = useAppDispatch();
-
+interface EditTransactionModalProps {
+  data: TransactionClass
+  open: boolean;
+  onClose: () => void;
+}
+export function EditTransactionModal({ data, open, onClose }: EditTransactionModalProps) {
   const mutation = useUpdateTransactionMutation();
   const [mutationTrigger, mutationResult] = mutation;
-  const [isOpen, data] = useTransactionModal(
-    "editTransaction",
-    mutation,
-    setFormInitialData,
-    onClose
-  );
 
   const isPending = mutationResult.status === "pending";
-  const isChanged = !isEqual(form.formState?.defaultValues, form.watch());
+  const isSuccess = mutationResult.status === "fulfilled";
 
-  function setFormInitialData(formData) {
-    const transaction = formData as TransactionClass;
-    const newData = {};
-    Object.keys(transaction)
-      .filter((key) => key != "id")
-      .forEach((key) => {
-        const newValue =
-          key === "date"
-            ? new Date(transaction[key as "date"])
-            : transaction[key as keyof TransactionClass];
-        newData[key] = newValue;
-      });
-    form.reset(newData);
-  }
+  useEffect(() => {
+      if (isSuccess) {
+          mutationResult.reset();
+          onClose();
+      }
+  }, [isSuccess, mutationResult]);
 
-  function onClose() {
-    mutationResult?.reset();
-    form.reset();
-  }
-
-  function handleClose() {
-    dispatch(close());
-  }
+  const transaction = data as TransactionClass;
+  const newData = {} as TransactionClass;
+  
+  Object.keys(transaction)
+    .filter((key) => key != "id")
+    .forEach((key) => {
+      const newValue =
+        key === "date"
+          ? new Date(transaction[key as "date"])
+          : transaction[key as keyof TransactionClass];
+      newData[key] = newValue;
+    });
 
   function handleSubmit(
     updatedTransaction: Partial<TransactionClass | { tags: string[] }>
@@ -67,21 +53,12 @@ export function EditTransactionModal() {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit transaction</DialogTitle>
         </DialogHeader>
-        <TransactionForm form={form} onSubmit={handleSubmit}></TransactionForm>
-        <DialogFooter>
-          <Button
-            type="submit"
-            disabled={!isChanged || isPending}
-            onClick={form.handleSubmit(handleSubmit)}
-          >
-            Save
-          </Button>
-        </DialogFooter>
+          <TransactionForm defaultValues={newData} isPending={isPending} onSubmit={handleSubmit} />
       </DialogContent>
     </Dialog>
   );

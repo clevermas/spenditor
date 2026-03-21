@@ -85,7 +85,7 @@ export function TransactionCategory({
   return (
     <div className={cn("flex items-center gap-2 text-base", className)}>
       <div style={iconColor ? { color: iconColor } : {}}>
-        {category ? <Icon size={14} strokeWidth={2} /> : <CircleOff />}{" "}
+        {category && Icon ? <Icon size={14} strokeWidth={2} /> : <CircleOff />}{" "}
       </div>
 
       {titleCase(category)}
