@@ -1,4 +1,6 @@
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ContainerProvider } from "@/components/shared/container-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { Providers } from "@/redux/provider";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -30,11 +32,15 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ClerkProvider>
-            <Providers>
-              {children}
-            </Providers>
-          </ClerkProvider>
+          <ContainerProvider>
+            <SidebarProvider>
+              <ClerkProvider>
+                <Providers>
+                  {children}
+                </Providers>
+              </ClerkProvider>
+            </SidebarProvider>
+          </ContainerProvider>
         </ThemeProvider>
         <Toaster />
       </body>

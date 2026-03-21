@@ -10,14 +10,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import {
-  RemoveTransactionModalData
-} from "@/redux/features/modal.slice";
 import { useRemoveTransactionMutation } from "@/redux/services/account-api";
 import { useEffect } from "react";
 
 interface RemoveTransactionModalProps {
-  data: RemoveTransactionModalData,
+  data: { transactionId: string }
   open: boolean;
   onClose: () => void;
 }

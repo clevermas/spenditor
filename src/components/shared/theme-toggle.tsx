@@ -4,11 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
-interface ModeToggleProps {
+interface ThemeToggleProps {
   className?: string;
 }
-
-function DarkModeToggle({ className }: ModeToggleProps) {
+export function ThemeToggle({ className }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -24,5 +23,3 @@ function DarkModeToggle({ className }: ModeToggleProps) {
     </Button>
   );
 }
-
-export default DarkModeToggle;

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import DarkModeToggle from "./dark-mode-toggle";
+import { ThemeToggle } from "./theme-toggle";
 
 const initialUseTheme = () => ({
   theme: "dark",
@@ -16,13 +16,13 @@ jest.mock("next-themes", () => {
   };
 });
 
-describe("Dark Mode Toggle", () => {
+describe("Theme Toggle", () => {
   beforeEach(() => {
     mocks.useTheme = initialUseTheme();
   });
 
   test("switches to light mode correctly", () => {
-    render(<DarkModeToggle />);
+    render(<ThemeToggle />);
 
     fireEvent.click(screen.getByText("Toggle theme"));
 
@@ -31,7 +31,7 @@ describe("Dark Mode Toggle", () => {
 
   test("switches to dark mode correctly", () => {
     mocks.useTheme.theme = "light";
-    render(<DarkModeToggle />);
+    render(<ThemeToggle />);
 
     fireEvent.click(screen.getByText("Toggle theme"));
 

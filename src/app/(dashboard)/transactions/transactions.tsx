@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { flattenTransactions } from "@/lib/transaction/transaction";
-import { createList } from "@/lib/utils";
+import { cn, createList } from "@/lib/utils";
 
 import { useErrorToastHandler } from "@/hooks/use-error-toast-handler";
 import { useAppDispatch } from "@/redux/hooks";
@@ -17,6 +17,7 @@ import { accountApi, useAccountDataQuery } from "@/redux/services/account-api";
 
 import { DataTable } from "@/app/(dashboard)/components/transaction/data-table";
 import { AddTransactionModal } from "@/components/modals/add-transaction-modal";
+import { Container } from "@/components/shared/container";
 
 export default function Transactions() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,6 +33,7 @@ export default function Transactions() {
   );
   const totalPages = data?.recentTransactions?.totalPages || 1;
   const updatedCurrentPage = data?.recentTransactions?.currentPage || 1;
+  const isLastPage = currentPage === totalPages;
 
   useEffect(
     () => () => {
@@ -53,50 +55,52 @@ export default function Transactions() {
   }
 
   return (
-    <section className="flex justify-center">
-      <div className="flex flex-wrap flex-col sm:flex-row gap-2 w-full lg:w-[1024px] px-4 lg:px-8 py-2">
-        <div className="w-full flex flex-row items-center gap-x-2">
-          <h1 className="text-md leading-9">Recent transactions</h1>
-        
-          <Button
-            disabled={isFetching}
-            onClick={() => setIsAddTransactionOpen(true)}
-            aria-label="add-transaction-button"
-            size="icon"
-            className="rounded-full w-8 h-8"
-          >
-            <Plus size={18} strokeWidth={2} />
-          </Button>
-          <AddTransactionModal 
-            open={isAddTransactionOpen} 
-            onClose={() => setIsAddTransactionOpen(false)}
-          />
-        </div>
-
-        <Card className="w-full">
-          <CardContent>
-            {isSuccess ? (
-              <DataTable data={transactions}></DataTable>
-            ) : isFetching ? (
-              <div className="space-y-4" data-testid="main-skeleton">
-                {createList(10, (i) => (
-                  <Skeleton className="h-7" key={i} />
-                ))}
-              </div>
-            ) : (
-              error && <NoResults></NoResults>
-            )}
-          </CardContent>
-        </Card>
-
-        {currentPage !== totalPages && (
-          <div className="w-full flex justify-center py-2">
-            <Button variant="ghost" onClick={loadMore} disabled={isFetching}>
-              Load more <ChevronDown size={16} strokeWidth={2}/>
+    <section>
+      <Container>
+        <div className="flex flex-1 flex-col gap-4">
+          <div className="w-full flex flex-row items-center gap-x-2">
+            <h1 className="text-md leading-7">Recent transactions</h1>
+          
+            <Button
+              disabled={isFetching}
+              onClick={() => setIsAddTransactionOpen(true)}
+              aria-label="add-transaction-button"
+              size="icon"
+              className="rounded-full w-8 h-8"
+            >
+              <Plus size={18} strokeWidth={2} />
             </Button>
+            <AddTransactionModal 
+              open={isAddTransactionOpen} 
+              onClose={() => setIsAddTransactionOpen(false)}
+            />
           </div>
-        )}
-      </div>
+
+          <Card className="w-full">
+            <CardContent>
+              {isSuccess ? (
+                <DataTable data={transactions}></DataTable>
+              ) : isFetching ? (
+                <div className="space-y-4" data-testid="main-skeleton">
+                  {createList(10, (i) => (
+                    <Skeleton className="h-7" key={i} />
+                  ))}
+                </div>
+              ) : (
+                error && <NoResults></NoResults>
+              )}
+            </CardContent>
+          </Card>
+
+          <div className={cn("w-full flex justify-center", !isLastPage && " pb-4")}>
+            {!isLastPage && (
+              <Button variant="ghost" onClick={loadMore} disabled={isFetching}>
+                Load more <ChevronDown size={16} strokeWidth={2}/>
+              </Button>
+            )}
+          </div>
+        </div>
+      </Container>
     </section>
   );
 }

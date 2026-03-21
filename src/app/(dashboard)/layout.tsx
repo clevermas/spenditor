@@ -1,23 +1,25 @@
 "use client";
 
-import Sidebar from "@/components/sidebar/sidebar";
-import { cn } from "@/lib/utils";
-import { useAppSelector } from "@/redux/hooks";
+import { AppSidebar } from "@/components/shared/sidebar";
+import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { UserButton } from "@clerk/nextjs";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { isOpen } = useAppSelector((state) => state.sidebarReducer);
   return (
     <>
-      <div
-        className={cn(
-          "min-h-screen pt-12 lg:pt-0",
-          "xl:px-[280px] bg-background dark:bg-background",
-          isOpen ? "lg:pl-[240px]" : "lg:pl-[56px]"
-        )}
-      >
-        <Sidebar></Sidebar>
-        <main>{children}</main>
-      </div>
+      <AppSidebar />
+      <SidebarInset className="pt-18 md:pt-2">
+        <header className="fixed bg-header w-full flex justify-between items-center top-0 p-2 md:p-0 md:relative">
+          <SidebarTrigger className="md:hidden"/>
+          <div className="md:hidden">
+            spenditor
+          </div>
+          <div className="flex items-center md:hidden">
+            <UserButton/>
+          </div>
+        </header>
+        {children}
+      </SidebarInset>
     </>
   );
 }
