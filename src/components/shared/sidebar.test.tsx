@@ -2,7 +2,7 @@ import { renderWithProviders } from "@/test/test-utils";
 import "@testing-library/jest-dom";
 import { fireEvent, screen } from "@testing-library/react";
 
-import Sidebar from "./sidebar";
+import Sidebar from "./sidebar-v1";
 
 const dispatch = jest.fn();
 

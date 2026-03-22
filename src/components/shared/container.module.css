@@ -1,0 +1,9 @@
+/* max-width: lg */
+@media (max-width: 80rem) {
+  .full-width {
+    max-width: calc(100vw - 10px);
+  }
+  .full-width--sidebar-open {
+    max-width: calc(100vw - 16rem - 10px);
+  }
+}
