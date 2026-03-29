@@ -114,7 +114,8 @@ export default function Home() {
                 </>
               )}
             </Card>
-            <Card>
+
+           <Card>
               <CardHeader>
                 {statisticsLoaded ? (
                   <CardTitle>Categories</CardTitle>
@@ -130,6 +131,7 @@ export default function Home() {
                 ></ExpensesPieChart>
               </CardContent>
             </Card>
+
             <Card>
               <CardHeader>
                 {statisticsLoaded ? (
@@ -140,7 +142,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <WeeklyExpensesChart
-                  data={weeklyExpenses}
+                  data={totalExpenses > 0 ? weeklyExpenses : []}
                   currency={data?.currency}
                   loading={!statisticsLoaded}
                 ></WeeklyExpensesChart>
