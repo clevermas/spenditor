@@ -48,8 +48,8 @@ export function AppSidebar() {
                 <SidebarNav items={nav} path={path}></SidebarNav>
             </SidebarContent>
 
-            <SidebarFooter className="items-end  group-data-[state=collapsed]:items-center">
-                <ThemeToggle />
+            <SidebarFooter className="items-end group-data-[state=collapsed]:items-center">
+                <ThemeToggle className="ml-[1]"/>
             </SidebarFooter>
         </Sidebar>
     )

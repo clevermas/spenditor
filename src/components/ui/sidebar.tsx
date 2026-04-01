@@ -333,7 +333,7 @@ function SidebarHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="sidebar-header"
       data-sidebar="header"
-      className={cn("gap-2 p-4 flex flex-col", className)}
+      className={cn("gap-2 p-4 flex flex-col group-data-[state=collapsed]:py-2", className)}
       {...props}
     />
   )
@@ -344,7 +344,7 @@ function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="sidebar-footer"
       data-sidebar="footer"
-      className={cn("gap-2 p-4 flex flex-col", className)}
+      className={cn("gap-2 p-4 flex flex-col group-data-[state=collapsed]:py-2", className)}
       {...props}
     />
   )
