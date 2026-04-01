@@ -29,7 +29,7 @@ type NavItem = {
 
 export const SidebarNav = ({ items, path }: SidebarNavProps) => {
   return items.map((item) => (
-    <SidebarMenu key={item.title} className="space-y-2 px-2">
+    <SidebarMenu key={item.title} className="space-y-2 px-4 group-data-[state=collapsed]:px-2">
       {item.items?.map((item) => (
         <SidebarMenuItem key={item.title} className="flex justify-center">
           <SidebarMenuButton asChild isActive={item.url === path}>
