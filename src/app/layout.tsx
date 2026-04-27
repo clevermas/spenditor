@@ -2,6 +2,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ContainerProvider } from "@/components/shared/container-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { Providers } from "@/redux/provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
@@ -34,11 +35,13 @@ export default function RootLayout({
         >
           <ContainerProvider>
             <SidebarProvider>
-              <ClerkProvider>
-                <Providers>
-                  {children}
-                </Providers>
-              </ClerkProvider>
+              <TooltipProvider>
+                <ClerkProvider>
+                  <Providers>
+                    {children}
+                  </Providers>
+                </ClerkProvider>
+              </TooltipProvider>
             </SidebarProvider>
           </ContainerProvider>
         </ThemeProvider>

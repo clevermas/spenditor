@@ -36,7 +36,7 @@ export function AppSidebar() {
     const path = usePathname();
     return (
         <Sidebar variant="sidebar" collapsible="icon">
-            <SidebarHeader className="flex flex-row items-center justify-between pl-4 group-data-[state=collapsed]:pl-2 group-data-[state=collapsed]:flex-col">
+            <SidebarHeader className="flex flex-row items-center justify-between pl-4 group-data-[state=collapsed]:flex-col">
                 <UserButton/>
                 <div className="flex group-data-[state=collapsed]:hidden">
                   spenditor
@@ -48,8 +48,8 @@ export function AppSidebar() {
                 <SidebarNav items={nav} path={path}></SidebarNav>
             </SidebarContent>
 
-            <SidebarFooter className="items-end  group-data-[state=collapsed]:items-center">
-                <ThemeToggle />
+            <SidebarFooter className="items-end group-data-[state=collapsed]:items-center">
+                <ThemeToggle className="ml-[1]"/>
             </SidebarFooter>
         </Sidebar>
     )

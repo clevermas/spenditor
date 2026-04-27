@@ -18,12 +18,12 @@ import {
 } from "@/components/ui/chart";
 
 const COLORS = [
+  "#291f84",
+  "#2e2395", 
   "#3729ac",
   "#432dd7",
   "#4f3af7",
-  "#625fff",
-  "#7d86ff",
-];
+].reverse();
 
 const CustomLegendIcon = ({ color }: { color: string }) => (
   <div
@@ -52,7 +52,7 @@ export function ExpensesPieChart({
     return data.map((item, i) => ({
       category: `category-${i + 1}`,
       expenses: item.value,
-      fill: COLORS[i % COLORS.length],
+      fill: COLORS[i % (COLORS.length + 1)],
     }));
   }, [data, loading]);
 
@@ -66,7 +66,7 @@ export function ExpensesPieChart({
       return config;
     }
     data.forEach((item, i) => {
-      const color = COLORS[i % COLORS.length];
+      const color = COLORS[i % (COLORS.length + 1)];
       config[`category-${i + 1}`] = {
         label: titleCase(item.name),
         color: color,
@@ -78,7 +78,7 @@ export function ExpensesPieChart({
 
   if (loading) {
     return (
-      <div className="flex h-[300px] flex-col items-center justify-center">
+      <div className="flex h-24 md:h-[300px] flex-col items-center justify-center">
         <Skeleton className="h-full w-full" />
       </div>
     );
@@ -86,7 +86,7 @@ export function ExpensesPieChart({
 
   if (!data || data.length === 0) {
     return (
-      <div className="flex h-[300px] flex-col items-center justify-center">
+      <div className="flex md:h-[300px] flex-col items-center justify-center">
         <NoResults/>
       </div>
     );
@@ -95,7 +95,7 @@ export function ExpensesPieChart({
   return (
     <ChartContainer
       config={chartConfig}
-      className="mx-auto aspect-square h-[300px]"
+      className="mx-auto aspect-square h-[300px] max-w-full"
     >
       <PieChart margin={{ top: -10, bottom: 12 }}>
         <ChartTooltip
